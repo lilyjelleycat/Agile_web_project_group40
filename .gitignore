@@ -24,6 +24,7 @@ app-env/
 
 # SQLite database (if you don’t want to push it)
 *.sqlite3
+*.db
 
 # Node modules (if you later use npm for frontend tools)
 node_modules/

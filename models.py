@@ -17,7 +17,7 @@ class Movie(db.Model):
     star4 = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return f'<Movie {self.name}>'
+        return f'<Movie {self.primaryTitle}>'
 
 class Person(db.Model):
     __tablename__ = 'person'
@@ -52,7 +52,7 @@ class Member(db.Model):
     hashPwd = db.Column(db.Text, nullable=False)
  
     def __repr__(self):
-        return f'<Member {self.name}>'
+        return f'<Member {self.firstName} {self.lastName}>'
 
 class Roles(db.Model):
     __tablename__ = 'roles'
