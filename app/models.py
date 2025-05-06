@@ -50,6 +50,7 @@ class Member(db.Model):
     lastName = db.Column(db.Text, nullable=False)
     email = db.Column(db.Text, nullable=False)
     hashPwd = db.Column(db.Text, nullable=False)
+    UserRoles = db.relationship('UserRole', backref='member', lazy=True)
  
     def __repr__(self):
         return f'<Member {self.firstName} {self.lastName}>'
@@ -57,9 +58,10 @@ class Member(db.Model):
 class Roles(db.Model):
     __tablename__ = 'roles'
     role = db.Column(db.Text, primary_key=True, nullable=False)
+    UserRoles = db.relationship('UserRole', backref='roles', lazy=True)
 
     def __repr__(self):
-        return f'<Roles {self.username}>'
+        return f'<Roles {self.role}>'
 
 class UserRole(db.Model):
     __tablename__ = 'user_role'

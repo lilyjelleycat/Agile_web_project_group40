@@ -3,9 +3,11 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from app.config import Config
 
-application = Flask(__name__)
-application.config.from_object(Config)
-db = SQLAlchemy(application)
-migrate = Migrate(application, db)
+app = Flask(__name__)
+app.config.from_object(Config)
 
-from app import routes, models  # noqa: E402, F401
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+if __name__ == "__main__":
+    app.run()

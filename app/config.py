@@ -5,4 +5,4 @@ default_db_path = 'sqllite:///' + os.path.join(basedir, 'movies.db')
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or default_db_path
-    SECRET_KEY = 'amber_pearl_latte_is_the_best'
+    SECRET_KEY = '1fc8c767c862b0b854db2b2f1bd9eb28'
