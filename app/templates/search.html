@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Search - CineBuff{% endblock %}
+{% block content %}
+<div class="text-center mt-5">
+  <h1 class="text-warning mb-4">Search IMDb Top 100 Movies</h1>
+  <input type="text" id="searchInput" class="styled-input" placeholder="Start typing a movie title...">
+  <ul id="results" class="autocomplete-list mx-auto mt-3"></ul>
+</div>
+
+<script>
+  const input = document.getElementById("searchInput");
+  const results = document.getElementById("results");
+
+  input.addEventListener("input", async function () {
+    const query = this.value.trim();
+    results.innerHTML = "";
+
+    if (query.length < 2) return;
+
+    try {
+      const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      if (data.length === 0) {
+        results.innerHTML = `<li class="no-results">No results found</li>`;
+      } else {
+        results.innerHTML = data.map(([title, tconst]) => `
+          <li>
+            <a href="/movie/${tconst}">${title}</a>
+          </li>`).join("");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  });
+</script>
+{% endblock %}

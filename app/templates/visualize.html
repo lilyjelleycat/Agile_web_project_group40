@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container text-center">
+  <h2 style="color: #ffd700;">Your Movie Analytics</h2>
+
+  <div class="mt-5">
+    <h4>You've reviewed {{ reviewed_count }} out of 100 movies!</h4>
+    <canvas id="reviewedPie" width="400" height="400"></canvas>
+  </div>
+
+  <div class="mt-5">
+    <h4>Genre Breakdown of Your Reviews</h4>
+    <canvas id="genreBar" width="600" height="400"></canvas>
+  </div>
+
+  <div class="mt-5">
+    <h4>Your Average Rating: {{ avg_rating }}/5</h4>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Pass data safely to JS -->
+<script type="text/javascript">
+  const reviewedCount = {{ reviewed_count | tojson }};
+  const genreData = {{ genre_data | tojson }};
+</script>
+
+<!-- Charts -->
+<script type="text/javascript">
+  const reviewedPie = new Chart(document.getElementById('reviewedPie'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Reviewed', 'Not Reviewed'],
+      datasets: [{
+        data: [reviewedCount, 100 - reviewedCount],
+        backgroundColor: ['#fbbc04', '#333'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#fff' } }
+      }
+    }
+  });
+
+  const genreBar = new Chart(document.getElementById('genreBar'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(genreData),
+      datasets: [{
+        label: 'Movies Reviewed by Genre',
+        data: Object.values(genreData),
+        backgroundColor: '#fbbc04',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { labels: { color: '#fff' } }
+      },
+      scales: {
+        x: { ticks: { color: '#fff' } },
+        y: { ticks: { color: '#fff' } }
+      }
+    }
+  });
+</script>
+{% endblock %}

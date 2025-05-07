@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Register - CineBuff{% endblock %}
+
+{% block content %}
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background-color: #0d1117 !important;
+    color: white;
+  }
+
+  .register-fullscreen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+
+  .register-fullscreen h1 {
+    font-size: 2.5rem;
+    color: #fbbc04;
+    margin-bottom: 2rem;
+  }
+
+  .register-form {
+    width: 100%;
+    max-width: 450px;
+    padding: 0 1rem;
+  }
+
+  .register-form input {
+    background-color: #161b22;
+    border: 1px solid #333;
+    color: #fff;
+    margin-bottom: 1rem;
+    padding: 12px;
+    width: 100%;
+  }
+
+  .register-form input::placeholder {
+    color: #888;
+  }
+
+  .btn-warning {
+    background-color: #fbbc04;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .btn-warning:hover {
+    background-color: #ffcc33;
+  }
+
+  .register-fullscreen p {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+
+  .register-fullscreen a {
+    color: #fbbc04;
+    text-decoration: none;
+  }
+
+  .register-fullscreen a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="register-fullscreen">
+  <h1>📝 Register for CineBuff</h1>
+  <form method="POST" action="{{ url_for('register') }}" class="register-form">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="text" name="firstName" placeholder="First Name" required>
+    <input type="text" name="lastName" placeholder="Last Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit" class="btn btn-warning">Create Account</button>
+  </form>
+  <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+</div>
+{% endblock %}

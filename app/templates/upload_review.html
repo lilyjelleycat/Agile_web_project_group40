@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Upload Review - CineReview{% endblock %}
+{% block content %}
+<div class="card shadow-lg p-5">
+  <h2 class="text-center mb-4">📽️ Submit a Movie Review</h2>
+  <form method="POST">
+    <div class="mb-3">
+      <select class="form-select" name="movie">
+        {% for movie in movies %}
+        <option value="{{ movie }}">{{ movie }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <input type="number" min="1" max="10" class="form-control" name="rating" placeholder="Rating (1-10)" required>
+    </div>
+    <div class="mb-3">
+      <textarea class="form-control" name="review" placeholder="Write your review..." rows="5"></textarea>
+    </div>
+    <div class="d-grid">
+      <button class="btn btn-primary" type="submit">Submit Review</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

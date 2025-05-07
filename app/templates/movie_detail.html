@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.primaryTitle }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column align-items-center text-center text-light" style="padding: 40px;">
+  <div class="p-4" style="background-color: #161b22; border-radius: 12px; max-width: 800px; width: 100%;">
+    <h2 style="color: #ffd700;">{{ movie.primaryTitle }} ({{ movie.startYear }})</h2>
+    <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" style="max-width: 300px; margin: 20px auto; border-radius: 12px;">
+
+    {% if avg_rating %}
+    <div class="my-3">
+      <h5 style="color: #ffd700;">
+        Average Rating: {{ avg_rating }}/5.0
+        {% for i in range(1, 6) %}
+          {% if avg_rating >= i %}
+            <i class="fa fa-star" style="color: #fbbc04;"></i>
+          {% elif avg_rating >= i - 0.5 %}
+            <i class="fa fa-star-half-o" style="color: #fbbc04;"></i>
+          {% else %}
+            <i class="fa fa-star-o" style="color: #fbbc04;"></i>
+          {% endif %}
+        {% endfor %}
+      </h5>
+    </div>
+    {% endif %}
+
+    <p><strong>Original Title:</strong> {{ movie.originalTitle }}</p>
+    <p><strong>Genres:</strong> {{ movie.genres }}</p>
+    <p><strong>Certificate:</strong> {{ movie.Certificate }}</p>
+    <p><strong>Runtime:</strong> {{ movie.runtimeMinutes }} minutes</p>
+    <p><strong>Director:</strong> {{ movie.Director }}</p>
+    <p><strong>Stars:</strong> {{ movie.Star1 }}, {{ movie.Star2 }}, {{ movie.Star3 }}, {{ movie.Star4 }}</p>
+  </div>
+
+  <hr class="my-4" style="border-color: #333; width: 100%; max-width: 800px;">
+
+  <div class="p-4" style="width: 100%; max-width: 800px;">
+    <h3 style="color: #ffd700;">User Reviews</h3>
+    {% if reviews %}
+      {% for review in reviews %}
+        <div style="margin-bottom: 20px; padding: 15px; background-color: #0d1117; border-left: 4px solid #fbbc04; border-radius: 6px;">
+          <strong style="color: #fbbc04;">{{ review.username }}</strong> rated it <strong>{{ review.rating }}/5</strong>
+          <p style="color: #ccc; margin-top: 8px;">{{ review.content }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: #ccc;">No reviews yet. Be the first to review!</p>
+    {% endif %}
+  </div>
+
+  {% if session.get('username') %}
+  <div class="p-4" style="width: 100%; max-width: 800px;">
+    <h3 style="color: #ffd700;">Leave a Review</h3>
+    <form method="POST">
+      <div class="star-rating mb-3">
+        {% for i in range(5, 0, -1) %}
+          <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}">
+          <label for="star{{ i }}"><i class="fa fa-star"></i></label>
+        {% endfor %}
+      </div>      
+      <div class="mb-3">
+        <textarea name="content" class="form-control" rows="4" placeholder="Write your review..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-warning">Submit Review</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

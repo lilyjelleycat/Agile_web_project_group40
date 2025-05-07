@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Shared Reviews{% endblock %}
+
+{% block content %}
+<div class="container text-light text-center py-5">
+  <h2 style="color: #ffd700;">Share your reviews!</h2>
+  {% if reviews %}
+    {% for r in reviews %}
+      <div class="my-4 p-4" style="background-color: #161b22; border-radius: 10px;">
+        <h5 style="color: #fbbc04;">{{ r.movie.primaryTitle }} ({{ r.movie.startYear }})</h5>
+        <p><strong>Rating:</strong> {{ r.rating }}/5</p>
+        <p>{{ r.content }}</p>
+        <div class="d-flex justify-content-center align-items-center mt-2">
+          <input type="text" class="form-control w-50 me-2" id="link-{{ r.id }}" value="{{ url_for('view_shared_review', review_id=r.id, _external=True) }}" readonly>
+          <button class="btn btn-sm btn-warning" onclick="copyToClipboard('link-{{ r.id }}')">Copy</button>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="color: #ccc;">You haven't reviewed yet.</p>
+  {% endif %}
+</div>
+
+<script>
+  function copyToClipboard(elementId) {
+    const input = document.getElementById(elementId);
+    input.select();
+    input.setSelectionRange(0, 99999); // For mobile
+    document.execCommand("copy");
+  }
+</script>
+{% endblock %}

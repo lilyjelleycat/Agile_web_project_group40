@@ -1,72 +1,75 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+# Movie Table
 
 class Movie(db.Model):
     __tablename__ = 'movie'
+
     tconst = db.Column(db.Text, primary_key=True)
-    primaryTitle = db.Column(db.Text, nullable=False)
-    originalTitle = db.Column(db.Text, nullable=False)
-    poster_link = db.Column(db.Text, nullable=False)
-    startYear = db.Column(db.Integer, nullable=False)
-    genres = db.Column(db.Text, nullable=False)
-    certificate = db.Column(db.Text, nullable=False)
-    runtimeMinutes = db.Column(db.Integer, nullable=False)
-    director = db.Column(db.Text, nullable=False)
-    star1 = db.Column(db.Text, nullable=False)
-    star2 = db.Column(db.Text, nullable=False)
-    star3 = db.Column(db.Text, nullable=False)
-    star4 = db.Column(db.Text, nullable=False)
+    primaryTitle = db.Column(db.Text)
+    originalTitle = db.Column(db.Text)
+    Poster_Link = db.Column(db.Text)
+    startYear = db.Column(db.Integer)
+    genres = db.Column(db.Text)
+    Certificate = db.Column(db.Text)
+    runtimeMinutes = db.Column(db.Integer)
+    Director = db.Column(db.Text)
+    Star1 = db.Column(db.Text)
+    Star2 = db.Column(db.Text)
+    Star3 = db.Column(db.Text)
+    Star4 = db.Column(db.Text)
+
 
     def __repr__(self):
         return f'<Movie {self.primaryTitle}>'
 
-class Person(db.Model):
-    __tablename__ = 'person'
-    nconst = db.Column(db.Text, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    birthYear = db.Column(db.Integer, nullable=False)
-    deathYear = db.Column(db.Integer, nullable=False)
-    primaryProfession = db.Column(db.Text, nullable=False)
-    knownForTitles = db.Column(db.Text, nullable=False)
-
-    def __repr__(self):
-        return f'<Person {self.name}>'
-
-class Principal(db.Model):
-    __tablename__ = 'principal'
-    tconst = db.Column(db.Text, db.ForeignKey('movie.tconst'), primary_key=True)
-    ordering = db.Column(db.Integer, primary_key=True)
-    nconst = db.Column(db.Text, db.ForeignKey('person.nconst'), primary_key=True)
-    category = db.Column(db.Text, nullable=False)
-    job = db.Column(db.Text, nullable=False)
-    characters = db.Column(db.Text, nullable=False)
-
-    def __repr__(self):
-        return f'<Principal {self.tconst}>'
-
+# User Table (Members)
 class Member(db.Model):
     __tablename__ = 'member'
-    username = db.Column(db.Text, primary_key=True)
-    firstName = db.Column(db.Text, nullable=False)
-    lastName = db.Column(db.Text, nullable=False)
-    email = db.Column(db.Text, nullable=False)
-    hashPwd = db.Column(db.Text, nullable=False)
-    UserRoles = db.relationship('UserRole', backref='member', lazy=True)
- 
-    def __repr__(self):
-        return f'<Member {self.firstName} {self.lastName}>'
+    username = db.Column(db.String, primary_key=True)
+    firstName = db.Column(db.String, nullable=False)
+    lastName = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    hashPwd = db.Column(db.String, nullable=False)
+    reviews = db.relationship('Review', backref='member', lazy=True)
+    roles = db.relationship('UserRole', backref='member', lazy=True)
 
-class Roles(db.Model):
+    def __repr__(self):
+        return f'<Member {self.username}>'
+
+
+# Role Table
+class Role(db.Model):
     __tablename__ = 'roles'
-    role = db.Column(db.Text, primary_key=True, nullable=False)
-    UserRoles = db.relationship('UserRole', backref='roles', lazy=True)
+
+    role = db.Column(db.String, primary_key=True)
+    users = db.relationship('UserRole', backref='role_obj', lazy=True)
 
     def __repr__(self):
-        return f'<Roles {self.role}>'
+        return f'<Role {self.role}>'
 
+# UserRole Table
 class UserRole(db.Model):
     __tablename__ = 'user_role'
-    username = db.Column(db.Text, db.ForeignKey('member.username'), primary_key=True)
-    role = db.Column(db.Text, db.ForeignKey('roles.role'), primary_key=True)
+
+    username = db.Column(db.String, db.ForeignKey('member.username'), primary_key=True)
+    role = db.Column(db.String, db.ForeignKey('roles.role'), primary_key=True)
 
     def __repr__(self):
-        return f'<UserRole {self.username}>'
+        return f'<UserRole {self.username} - {self.role}>'
+
+# Review Table
+class Review(db.Model):
+    __tablename__ = 'review'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    movie_id = db.Column(db.String, db.ForeignKey('movie.tconst'), nullable=False)
+    username = db.Column(db.String, db.ForeignKey('member.username'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    content = db.Column(db.Text, nullable=True)
+    movie = db.relationship('Movie')
+
+    def __repr__(self):
+        return f'<Review {self.movie_id} by {self.username}>'
