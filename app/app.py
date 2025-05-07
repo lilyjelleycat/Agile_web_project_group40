@@ -7,8 +7,12 @@ import os
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../movies.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# DB path inside app/
+# Add this above db.init_app(app)
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'movies.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
 db.init_app(app)
 
 @app.route("/")
@@ -156,6 +160,13 @@ def test_db():
     return f"DB Connected! Found {count} movie(s)." if count else "DB Connected, but no movie data found."
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+    if os.path.exists(db_path):
+        with app.app_context():
+            db.create_all()
+    else:
+        raise RuntimeError(
+            f"Database not found at {db_path}. Please seed or import the database before running the app."
+        )
+
     app.run(debug=True)
+
