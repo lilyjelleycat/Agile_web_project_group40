@@ -4,17 +4,16 @@ from models import db, Movie, Member, Review, Role, UserRole
 from sqlalchemy import func
 import os
 
+# Flask app setup
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../movies.db' 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# DB path inside app/
-# Add this above db.init_app(app)
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'movies.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-
+# Initialize SQLAlchemy
 db.init_app(app)
 
+# Routes
 @app.route("/")
 def home():
     if "username" in session:
@@ -159,14 +158,12 @@ def test_db():
     count = Movie.query.count()
     return f"DB Connected! Found {count} movie(s)." if count else "DB Connected, but no movie data found."
 
+# Run the app
 if __name__ == "__main__":
-    if os.path.exists(db_path):
+    if os.path.exists("movies.db"):
         with app.app_context():
             db.create_all()
     else:
-        raise RuntimeError(
-            f"Database not found at {db_path}. Please seed or import the database before running the app."
-        )
-
+        raise RuntimeError("movies.db not found in app/ directory. Please place it there before running the app.")
+    
     app.run(debug=True)
-
