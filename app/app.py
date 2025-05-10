@@ -26,8 +26,6 @@ def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
-        print('Passed validation')
-        
         username = form.username.data
         first_name = form.first_name.data
         last_name = form.last_name.data
@@ -45,7 +43,24 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    return render_template("login.html", form=form)
+    
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        
+        member = Member.query.filter_by(username=username).first()
+        print('Login attempt:', username, password)
+        print('Member found:', member)
+        print('Password hash:', member.hashPwd)
+        print('Password check:', check_password_hash(member.hashPwd, password))
+        
+        if member and check_password_hash(member.hashPwd, password):
+            session["username"] = username
+            flash(f'Welcome back, {username}!', 'success')
+            return render_template("search.html")
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    return render_template("login.html")
 
 @app.route("/logout")
 def logout():
