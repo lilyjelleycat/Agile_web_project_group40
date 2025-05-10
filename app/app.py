@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from forms import RegistrationForm, LoginForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Movie, Member, Review, Role, UserRole
@@ -24,8 +24,19 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    print("Received form data...")
-    print("Form data:", form.first_name.data, form.last_name.data, form.email.data, form.username.data, form.password.data)
+    if form.validate_on_submit():
+        username = form.username.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        email = form.email.data
+        password = generate_password_hash(form.password.data, method='sha256')
+
+        #new_member = Member(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
+        #db.session.add(new_member)
+        #db.session.commit()
+
+        flash(f'Account created for {form.username.data}!', 'success')
+        return redirect(url_for("/login"))
     return render_template("register.html", form=form)
 
 @app.route("/login", methods=["GET", "POST"])
