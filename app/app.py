@@ -26,13 +26,15 @@ def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
+        print('Passed validation')
+        
         username = form.username.data
         first_name = form.first_name.data
         last_name = form.last_name.data
         email = form.email.data
         password = generate_password_hash(form.password.data)
         
-        new_member = Member(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
+        new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, password=password)
         db.session.add(new_member)
         db.session.commit()
         
