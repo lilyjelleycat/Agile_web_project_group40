@@ -79,6 +79,7 @@
   }
 </style>
 
+<!--
 <div class="login-fullscreen">
   <h1>🔐 Login to CineBuff</h1>
   <form method="POST" action="{{ url_for('login') }}" class="login-form">
@@ -87,5 +88,27 @@
     <button type="submit" class="btn btn-warning">Login</button>
   </form>
   <p>New here? <a href="{{ url_for('register') }}">Create an account</a></p>
-</div>
+</div>-->
+
+    <form method="POST" class="form-layout">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend>🔐 Login for CineBuff</legend>
+
+        {% for field in [form.username, form.password] %}
+        <div class="form-group">
+          {{ field.label(class="form-control-label") }}
+          {{ field(class="form-control" + (' error-field' if field.errors else '')) }}
+          {% for error in field.errors %}
+          <div class="error-msg">{{ error }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </fieldset>
+
+      <div class="form-group">
+        {{ form.submit(class="btn btn-warning") }}
+      </div>
+    </form>
+
 {% endblock %}
