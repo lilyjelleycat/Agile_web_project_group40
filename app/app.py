@@ -34,7 +34,7 @@ def register():
         email = form.email.data
         password = generate_password_hash(form.password.data)
         
-        new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, password=password)
+        new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, hashPwd=password)
         db.session.add(new_member)
         db.session.commit()
         
