@@ -2,113 +2,24 @@
 {% block title %}Login - CineBuff{% endblock %}
 
 {% block content %}
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #0d1117 !important;  /* FORCE dark */
-  }
+  <form method="POST" class="form-layout">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend>🔐 Login for CineBuff</legend>
 
-  body > nav {
-    background-color: #0d1117 !important;
-  }
-
-  .login-fullscreen {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: #fff;
-    text-align: center;
-    background-color: #0d1117;
-  }
-
-  .login-fullscreen h1 {
-    font-size: 3rem;
-    color: #fbbc04;
-    margin-bottom: 2rem;
-  }
-
-  .login-form {
-    width: 100%;
-    max-width: 400px;
-    padding: 0 1rem;
-  }
-
-  .login-form input {
-    background-color: #161b22;
-    border: 1px solid #333;
-    color: #fff;
-    margin-bottom: 1rem;
-    padding: 12px;
-  }
-
-  .login-form input::placeholder {
-    color: #888;
-  }
-
-  .btn-warning {
-    background-color: #fbbc04;
-    border: none;
-    color: #000;
-    font-weight: bold;
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-  }
-
-  .btn-warning:hover {
-    background-color: #ffcc33;
-  }
-
-  .login-fullscreen p {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #ccc;
-  }
-
-  .login-fullscreen a {
-    color: #fbbc04;
-    text-decoration: none;
-  }
-
-  .login-fullscreen a:hover {
-    text-decoration: underline;
-  }
-</style>
-
-<!--
-<div class="login-fullscreen">
-  <h1>🔐 Login to CineBuff</h1>
-  <form method="POST" action="{{ url_for('login') }}" class="login-form">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit" class="btn btn-warning">Login</button>
-  </form>
-  <p>New here? <a href="{{ url_for('register') }}">Create an account</a></p>
-</div>-->
-
-    <form method="POST" class="form-layout">
-      {{ form.hidden_tag() }}
-      <fieldset class="form-group">
-        <legend>🔐 Login for CineBuff</legend>
-
-        {% for field in [form.username, form.password] %}
-        <div class="form-group">
-          {{ field.label(class="form-control-label") }}
-          {{ field(class="form-control" + (' error-field' if field.errors else '')) }}
-          {% for error in field.errors %}
-          <div class="error-msg">{{ error }}</div>
-          {% endfor %}
-        </div>
-        {% endfor %}
-      </fieldset>
-
+      {% for field in [form.username, form.password] %}
       <div class="form-group">
-        {{ form.submit(class="btn btn-warning") }}
+        {{ field.label(class="form-control-label") }}
+        {{ field(class="form-control" + (' error-field' if field.errors else '')) }}
+        {% for error in field.errors %}
+        <div class="error-msg">{{ error }}</div>
+        {% endfor %}
       </div>
-    </form>
+      {% endfor %}
+    </fieldset>
 
+    <div class="form-group">
+      {{ form.submit(class="btn btn-warning") }}
+    </div>
+  </form>
 {% endblock %}
