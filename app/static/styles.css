@@ -1,4 +1,4 @@
-/* Base Settings */
+/* === Base Settings === */
 body {
     font-family: 'Poppins', 'Segoe UI', sans-serif;
     background-color: #0d1117;
@@ -27,7 +27,7 @@ nav {
     color: white !important;
 }
 
-/* Container Styling */
+/* === Generic Container Styling === */
 .container {
     width: 90%;
     max-width: 600px;
@@ -38,7 +38,7 @@ nav {
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
 }
 
-/* Form Elements */
+/* === Form Elements === */
 form {
     display: flex;
     flex-direction: column;
@@ -65,8 +65,9 @@ textarea {
     resize: vertical;
 }
 
-/* Button Styling */
+/* === Button Styling === */
 button,
+.btn,
 .homepage-login-btn {
     padding: 10px 20px;
     background-color: #fbbc04;
@@ -77,15 +78,17 @@ button,
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
+    width: 100%;
 }
 
 button:hover,
+.btn:hover,
 .homepage-login-btn:hover {
     background-color: #ffdd57;
     color: black;
 }
 
-/* Links */
+/* === Links === */
 a {
     color: #00b7ff;
     text-decoration: none;
@@ -95,14 +98,14 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Headings */
+/* === Headings === */
 h1, h2 {
     text-align: center;
     margin-bottom: 20px;
     color: #ffd700;
 }
 
-/* Movie List */
+/* === Movie List === */
 .movie-option {
     display: flex;
     align-items: center;
@@ -117,7 +120,7 @@ h1, h2 {
     margin-right: 10px;
 }
 
-/* Canvas styling */
+/* === Canvas Styling === */
 canvas {
     background: #161b22;
     border: 1px solid #444;
@@ -127,7 +130,7 @@ canvas {
     color: #f0f0f0;
 }
 
-/* Search Box Styling */
+/* === Search Box Styling === */
 #searchInput {
     font-size: 1.2rem;
     padding: 14px;
@@ -152,7 +155,7 @@ canvas {
     background-color: #222 !important;
 }
 
-/* Autocomplete Fallbacks */
+/* === Autocomplete === */
 .styled-input {
     width: 80%;
     max-width: 500px;
@@ -195,6 +198,7 @@ canvas {
 .autocomplete-list li a:hover {
     background-color: #373737;
 }
+
 .autocomplete-list li.no-results {
     color: white;
     background-color: #161b22;
@@ -202,9 +206,10 @@ canvas {
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 6px;
-  }
-  
-  .movie-detail-container {
+}
+
+/* === Movie Detail Layout === */
+.movie-detail-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -256,6 +261,8 @@ canvas {
     border-radius: 8px;
     border: 1px solid #333;
 }
+
+/* === Rating Styles === */
 .rating-container {
     direction: rtl;
     unicode-bidi: bidi-override;
@@ -263,72 +270,146 @@ canvas {
     display: inline-flex;
     justify-content: center;
     margin: 1rem 0;
-  }
-  
-  .rating-container input {
+}
+
+.rating-container input {
     display: none;
-  }
-  
-  .rating-container label {
+}
+
+.rating-container label {
     color: #444;
     cursor: pointer;
     padding: 0 4px;
-  }
-  
-  .rating-container label::before {
+}
+
+.rating-container label::before {
     content: "★";
     font-size: 2.5rem;
     color: #ffd700;
     opacity: 0.3;
     transition: opacity 0.2s;
-  }
-  
-  .rating-container input:checked ~ label::before,
-  .rating-container label:hover ~ label::before,
-  .rating-container label:hover::before {
+}
+
+.rating-container input:checked ~ label::before,
+.rating-container label:hover ~ label::before,
+.rating-container label:hover::before {
     opacity: 1;
-  }
-  .review-stars {
+}
+
+.review-stars {
     display: inline-block;
     margin-left: 10px;
     font-size: 1.2rem;
-  }
-  
-  .review-stars span {
+}
+
+.review-stars span {
     color: #444;
-  }
-  
-  .review-stars .filled {
+}
+
+.review-stars .filled {
     color: #ffd700;
-  }
-  /* Star Rating (5 Stars) */
+}
+
 .star-rating {
     direction: rtl;
     font-size: 2rem;
     display: inline-flex;
     gap: 4px;
     justify-content: center;
-  }
-  
-  .star-rating input[type="radio"] {
+}
+
+.star-rating input[type="radio"] {
     display: none;
-  }
-  
-  .star-rating label {
+}
+
+.star-rating label {
     color: #444;
     cursor: pointer;
     transition: color 0.2s;
-  }
-  
-  .star-rating input[type="radio"]:checked ~ label,
-  .star-rating label:hover,
-  .star-rating label:hover ~ label {
-    color: #fbbc04;
-  }
+}
 
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #fbbc04;
+}
+
+/* === Auth Pages (Login/Register) === */
+.form-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0d1117;
+    padding: 40px 20px;
+  }
   
+  .auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 0 1rem;
+    background: transparent;
+    box-shadow: none;
+  }
   
-/* Responsive */
+  legend {
+    text-align: center;
+    font-size: 2rem;
+    color: #fbbc04;
+    margin-bottom: 2rem;
+    font-weight: 600;
+  }
+  
+  .form-control {
+    background-color: #161b22;
+    border: 1px solid #2c2f36;
+    color: #f0f0f0;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+  
+  .form-control::placeholder {
+    color: #999;
+  }
+  
+  .btn-warning {
+    background-color: #fbbc04;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 6px;
+    width: 100%;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-warning:hover {
+    background-color: #ffcc33;
+  }
+  
+  .auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  
+  .auth-footer a {
+    color: #fbbc04;
+    font-weight: 500;
+  }
+  
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+  
+/* === Responsive === */
 @media (max-width: 600px) {
     .container {
         width: 95%;
