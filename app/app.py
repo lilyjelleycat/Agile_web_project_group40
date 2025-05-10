@@ -60,7 +60,7 @@ def login():
             return render_template("search.html")
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 @app.route("/logout")
 def logout():
