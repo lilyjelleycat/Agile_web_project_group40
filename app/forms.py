@@ -17,16 +17,9 @@ class RegistrationForm(FlaskForm):
         print('Validating username:', username.data)
         # Add logic to check if username already exists in the database
         
-        users = Member.query.all()
-        for user in users:
-            print('User:', user.username)
-        #     if user.username == username.data:
-        #         raise ValidationError('That username is already taken. Please choose a different one.')
-        
-        # print('User found:', user)
-        
-        # if user:
-        #     raise ValidationError('That username is already taken. Please choose a different one.')
+        user = Member.query.filter_by(username=username.data).first()
+        if user.username == username.data:
+            raise ValidationError('That username is already taken. Please choose a different one.')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])

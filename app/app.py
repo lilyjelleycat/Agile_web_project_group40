@@ -23,8 +23,6 @@ def home():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    print('Register route accessed')
-    
     form = RegistrationForm()
     
     if form.validate_on_submit():
@@ -33,11 +31,11 @@ def register():
         last_name = form.last_name.data
         email = form.email.data
         password = generate_password_hash(form.password.data)
-
-        #new_member = Member(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
-        #db.session.add(new_member)
-        #db.session.commit()
-
+        
+        new_member = Member(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
+        db.session.add(new_member)
+        db.session.commit()
+        
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
