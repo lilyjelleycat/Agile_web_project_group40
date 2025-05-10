@@ -24,7 +24,12 @@ def home():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit():
+    
+    isvalid = form.validate_on_submit()
+    print('valid: ', isvalid)
+    print(form.errors)
+    
+    if isvalid:
         username = form.username.data
         first_name = form.first_name.data
         last_name = form.last_name.data
