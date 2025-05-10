@@ -75,15 +75,47 @@
 </style>
 
 <div class="register-fullscreen">
-  <h1>📝 Register for CineBuff</h1>
-  <form method="POST" action="{{ url_for('register') }}" class="register-form">
-    <input type="text" name="username" placeholder="Username" required>
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">📝 Register for CineBuff</legend>
+      <div class="form-group">
+        {{ form.username.label(class="form-control-label") }}
+        {{ form.username(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.first_name.label(class="form-control-label") }}
+        {{ form.first_name(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.last_name.label(class="form-control-label") }}
+        {{ form.last_name(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.email.label(class="form-control-label") }}
+        {{ form.email(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.password.label(class="form-control-label") }}
+        {{ form.password(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.confirm_password.label(class="form-control-label") }}
+        {{ form.confirm_password(class="form-control form-control-lg") }}
+      </div>
+    <!--<input type="text" name="username" placeholder="Username" required>
     <input type="text" name="firstName" placeholder="First Name" required>
     <input type="text" name="lastName" placeholder="Last Name" required>
     <input type="email" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Password" required>
-    <button type="submit" class="btn btn-warning">Create Account</button>
+    <button type="submit" class="btn btn-warning">Create Account</button>-->
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
   </form>
-  <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+</div>
+<div class="register-fullscreen">
+  <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
 </div>
 {% endblock %}
