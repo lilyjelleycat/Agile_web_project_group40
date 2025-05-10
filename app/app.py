@@ -23,25 +23,23 @@ def home():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    print('Register route accessed')
+    
     form = RegistrationForm()
     
-    isvalid = form.validate_on_submit()
-    print('valid: ', isvalid)
-    print(form.errors)
-    
-    if isvalid:
+    if form.validate_on_submit():
         username = form.username.data
         first_name = form.first_name.data
         last_name = form.last_name.data
         email = form.email.data
-        password = generate_password_hash(form.password.data, method='sha256')
+        password = generate_password_hash(form.password.data)
 
         #new_member = Member(username=username, first_name=first_name, last_name=last_name, email=email, password=password)
         #db.session.add(new_member)
         #db.session.commit()
 
         flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for("/login"))
+        return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
 @app.route("/login", methods=["GET", "POST"])
