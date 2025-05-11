@@ -47,7 +47,7 @@
       <p><strong>Rating:</strong> {{ review.rating }}/5</p>
       <p>{{ review.content }}</p>
 
-      <form method="POST" action="{{ url_for('see_reviews') }}">
+      <form method="POST" action="{{ url_for('movies.see_reviews') }}">
         <input type="hidden" name="review_id" value="{{ review.id }}">
         <div class="mb-3">
           <label for="rating">Edit Rating:</label>

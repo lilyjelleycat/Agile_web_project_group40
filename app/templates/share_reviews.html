@@ -11,7 +11,7 @@
         <p><strong>Rating:</strong> {{ r.rating }}/5</p>
         <p>{{ r.content }}</p>
         <div class="d-flex justify-content-center align-items-center mt-2">
-          <input type="text" class="form-control w-50 me-2" id="link-{{ r.id }}" value="{{ url_for('view_shared_review', review_id=r.id, _external=True) }}" readonly>
+          <input type="text" class="form-control w-50 me-2" id="link-{{ r.id }}" value="{{ url_for('movies.view_shared_review', review_id=r.id, _external=True) }}" readonly>
           <button class="btn btn-sm btn-warning" onclick="copyToClipboard('link-{{ r.id }}')">Copy</button>
         </div>
       </div>
