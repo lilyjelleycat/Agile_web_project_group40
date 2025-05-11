@@ -7,7 +7,10 @@
         {% for movie in movies %}
         <tr>
             <td width=100px style="padding: 10px; background-color: #0d1117; color: #ccc;">
-                <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100" />
+                <a href="{{ url_for('movies.movie_detail', tconst=movie.tconst) }}">
+                    <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100px" />
+                  </a>
+                  
             </td>
             <td style="padding: 10px; background-color: #0d1117; color: #ccc;">
                 <strong>Title: </strong>{{ movie.primaryTitle }}<br />
