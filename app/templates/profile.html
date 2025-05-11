@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <h2 class="text-warning text-center mb-4">👤 Your Profile</h2>
+
+  <div class="profile-card">
+    <h4>Username: {{ user.username }}</h4>
+    <p><strong>First Name:</strong> {{ user.firstName }}</p>
+    <p><strong>Last Name:</strong> {{ user.lastName }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+  </div>
+
+  <h4 class="text-warning">Your Reviews</h4>
+  {% if reviews %}
+    {% for r in reviews %}
+    <div class="profile-reviews">
+      <strong>{{ r.movie.primaryTitle }}</strong> — Rated {{ r.rating }}/5
+      <p>{{ r.content }}</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">You haven’t reviewed any movies yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

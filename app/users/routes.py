@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.users.forms import RegistrationForm, LoginForm
 from app.movies.forms import SearchForm
-from app.models import Member, UserRole
+from app.models import Member, UserRole,Review
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
@@ -54,3 +54,13 @@ def login():
 def logout():
     session.pop("username", None)
     return redirect(url_for("main.home"))
+
+@users.route('/profile')
+def profile():
+    if 'username' not in session:
+        return redirect(url_for('users.login'))
+
+    user = Member.query.get(session['username'])
+    reviews = Review.query.filter_by(username=user.username).all()
+
+    return render_template('profile.html', user=user, reviews=reviews)
