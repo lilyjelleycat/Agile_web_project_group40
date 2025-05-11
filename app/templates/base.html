@@ -33,7 +33,8 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{{ url_for('main.home') }}">CineBuff</a>
+      <a class="navbar-brand" href="{% if 'username' in session %}{{ url_for('movies.search') }}{% else %}{{ url_for('main.home') }}{% endif %}">CineBuff</a>
+
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify
+from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify,flash
 from app import db
 from app.models import Movie, Review, AnalyticsShare, ReviewShare
 from app.movies.forms import SearchForm,AnalyticsViewerForm
@@ -148,5 +148,18 @@ def view_shared_review(review_id):
 def share_reviews():
     if "username" not in session:
         return redirect(url_for("main.login"))
-    reviews = Review.query.filter_by(username=session["username"]).all()
-    return render_template("share_reviews.html", reviews=reviews)
+
+    username = session["username"]
+
+    review_shares = ReviewShare.query.filter_by(owner_username=username).all()
+    analytics_shares = AnalyticsShare.query.filter_by(owner_username=username).all()
+
+    shared_status = {}
+
+    for r in review_shares:
+        shared_status.setdefault(r.viewer_username, {})["review"] = True
+    for a in analytics_shares:
+        shared_status.setdefault(a.viewer_username, {})["analytics"] = True
+
+    return render_template("share_reviews.html", shared_status=shared_status)
+

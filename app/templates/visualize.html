@@ -8,12 +8,12 @@
     {{ form.hidden_tag() }}
     <div class="mb-3 w-50 mx-auto">
       {{ form.friend_username.label(class="form-label text-warning") }}
-      {{ form.friend_username(class="form-select") }}
+      {{ form.friend_username(class="form-control", onchange="this.form.submit()") }}
+      
     </div>
-    {{ form.submit(class="btn btn-warning") }}
   </form>
 
-  <h5 class="text-info mb-4">Showing analytics for: <strong>{{ selected_user }}</strong></h5>
+  <h5 class="mb-4">Showing analytics for: <strong>{{ selected_user }}</strong></h5>
   <div class="mt-5">
     <h4>You've reviewed {{ reviewed_count }} out of 100 movies!</h4>
     <canvas id="reviewedPie" width="400" height="400"></canvas>

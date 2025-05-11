@@ -1,14 +1,13 @@
-from flask import Blueprint, session, render_template, redirect, url_for, flash,request,jsonify
+from flask import Blueprint, session, render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.users.forms import RegistrationForm, LoginForm
 from app.movies.forms import SearchForm
-from app.models import Member, UserRole,Review,AnalyticsShare,ReviewShare
+from app.models import Member, UserRole, Review, AnalyticsShare, ReviewShare
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
 
-# Routes
 @users.route("/register", methods=["GET", "POST"])
 def register():
     regForm = RegistrationForm()
@@ -20,7 +19,6 @@ def register():
         email = regForm.email.data
         password = generate_password_hash(regForm.password.data)
         
-        # Create user and assign the default role
         new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, hashPwd=password)
         db.session.add(new_member)
         
@@ -30,6 +28,7 @@ def register():
         
         flash(f'Account created for {regForm.username.data}!', 'success')
         return redirect(url_for("users.login"))
+
     return render_template("register.html", form=regForm)
 
 @users.route("/login", methods=["GET", "POST"])
@@ -48,6 +47,7 @@ def login():
             return redirect(url_for("movies.search"))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
+
     return render_template("login.html", form=loginForm)
 
 @users.route("/logout")
@@ -55,7 +55,7 @@ def logout():
     session.pop("username", None)
     return redirect(url_for("main.home"))
 
-@users.route('/profile')
+@users.route("/profile")
 def profile():
     if 'username' not in session:
         return redirect(url_for('users.login'))
@@ -65,20 +65,18 @@ def profile():
 
     return render_template('profile.html', user=user, reviews=reviews)
 
-@users.route('/search_user')
+@users.route("/search_user")
 def search_user():
     q = request.args.get("q", "").strip()
-    print(f"QUERY: {q}")  # ← Add this
     if 'username' not in session or not q:
         return jsonify([])
 
     current_user = session['username']
     users = Member.query.filter(Member.username.ilike(f"%{q}%")).all()
     usernames = [u.username for u in users if u.username != current_user]
-    print(f"FOUND USERS: {usernames}")  # ← Add this too
     return jsonify(usernames)
 
-@users.route('/save_shares', methods=['POST'])
+@users.route("/save_shares", methods=['POST'])
 def save_shares():
     if 'username' not in session:
         return jsonify({'error': 'Unauthorized'}), 403
@@ -87,7 +85,7 @@ def save_shares():
     current_user = session['username']
     shares = data.get("shares", [])  # Format: [{username: 'alex', review: true, analytics: false}]
 
-    # Clear old shares
+    # Remove old shares
     ReviewShare.query.filter_by(owner_username=current_user).delete()
     AnalyticsShare.query.filter_by(owner_username=current_user).delete()
 
@@ -103,3 +101,25 @@ def save_shares():
 
     db.session.commit()
     return jsonify({'message': 'Success'}), 200
+
+@users.route("/share", methods=["GET"])
+def share():
+    if "username" not in session:
+        return redirect(url_for("users.login"))
+
+    current_user = session["username"]
+
+    # Get sharing records
+    review_shares = ReviewShare.query.filter_by(owner_username=current_user).all()
+    analytics_shares = AnalyticsShare.query.filter_by(owner_username=current_user).all()
+
+    # Merge sharing state
+    shared_status = {}
+
+    for r in review_shares:
+        shared_status.setdefault(r.viewer_username, {})["review"] = True
+
+    for a in analytics_shares:
+        shared_status.setdefault(a.viewer_username, {})["analytics"] = True
+
+    return render_template("share.html", shared_status=shared_status)
