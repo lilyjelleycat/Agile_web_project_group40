@@ -7,9 +7,13 @@
         {% for movie in movies %}
         <tr>
             <td width=100px style="padding: 10px; background-color: #0d1117; color: #ccc;">
-                <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100" />
+                {% if session.get('isAdmin') %}
+                <a href="{{ url_for('admin.edit_movie', tconst=movie.tconst) }}">
+                  <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100" />
+                </a>
+                {% endif %}
             </td>
-            <td style="padding: 10px; background-color: #0d1117; color: #ccc;">
+            <td valign="top" style="padding: 10px; background-color: #0d1117; color: #ccc;">
                 <strong>Title: </strong>{{ movie.primaryTitle }}<br />
                 <strong>Year: </strong>{{ movie.startYear }}<br />
                 <strong>Director: </strong>{{ movie.Director }}<br />

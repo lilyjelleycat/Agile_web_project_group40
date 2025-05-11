@@ -44,6 +44,22 @@ def login():
         
         if member and check_password_hash(member.hashPwd, password):
             session["username"] = member.username
+            
+            # Check if logged in user is an admin
+            if member.isAdministrator():
+                session["isAdmin"] = True
+            else:
+                session["isAdmin"] = False
+            
+            # Check if logged in user is a regular user
+            if member.isUser():
+                session["isUser"] = True
+            else:
+                session["isUser"] = False
+            
+            print('User is an admin:', session["isAdmin"])
+            print('User is a regular user:', session["isUser"])
+            
             flash(f'Welcome back, {member.username}!', 'success')
             return redirect(url_for("movies.search"))
         else:

@@ -18,7 +18,8 @@ class Movie(db.Model):
     Star2 = db.Column(db.Text)
     Star3 = db.Column(db.Text)
     Star4 = db.Column(db.Text)
-
+    Overview = db.Column(db.Text)
+    reviews = db.relationship('Review', backref='has', lazy=True)
 
     def __repr__(self):
         return f'<Movie {self.primaryTitle}>'
@@ -33,7 +34,21 @@ class Member(db.Model):
     hashPwd = db.Column(db.String, nullable=False)
     reviews = db.relationship('Review', backref='member', lazy=True)
     roles = db.relationship('UserRole', backref='member', lazy=True)
-
+    
+    def isAdministrator(self):
+        if self.roles:
+            for role in self.roles:
+                if role.role == 'admin':
+                    return True
+        return False
+    
+    def isUser(self):
+        if self.roles:
+            for role in self.roles:
+                if role.role == 'user':
+                    return True
+        return False
+    
     def __repr__(self):
         return f'<Member {self.username}>'
 
