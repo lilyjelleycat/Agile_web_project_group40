@@ -41,14 +41,10 @@ def login():
         password = form.password.data
         
         member = Member.query.filter_by(username=username).first()
-        print('Login attempt:', username, password)
-        print('Member found:', member)
-        print('Password hash:', member.hashPwd)
-        print('Password check:', check_password_hash(member.hashPwd, password))
         
         if member and check_password_hash(member.hashPwd, password):
-            session["username"] = username
-            flash(f'Welcome back, {username}!', 'success')
+            session["username"] = member.username
+            flash(f'Welcome back, {member.username}!', 'success')
             return render_template("search.html")
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
@@ -61,7 +57,7 @@ def logout():
 
 @app.route("/search")
 def search():
-    if 'username' not in session:
+    if 'user' not in session:
         return redirect(url_for('home'))
     return render_template("search.html")
 
