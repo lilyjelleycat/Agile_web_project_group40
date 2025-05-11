@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify
 from app import db
-from app.models import Movie, Review
-from app.movies.forms import SearchForm
+from app.models import Movie, Review, AnalyticsShare, ReviewShare
+from app.movies.forms import SearchForm,AnalyticsViewerForm
 
 # Blueprint for movie routes
 movies = Blueprint('movies', __name__)
@@ -70,24 +70,50 @@ def movie_detail(tconst):
 
     return render_template("movie_detail.html", movie=movie, reviews=reviews, avg_rating=avg_rating)
 
-@movies.route("/visualize")
+@movies.route('/visualize', methods=['GET', 'POST'])
 def visualize():
-    if "username" not in session:
-        return redirect(url_for("user.login"))
+    if 'username' not in session:
+        return redirect(url_for('users.login'))
 
-    username = session["username"]
-    user_reviews = Review.query.filter_by(username=username).all()
-    reviewed_count = len(user_reviews)
-    avg_rating = round(sum(r.rating for r in user_reviews) / reviewed_count, 2) if reviewed_count else 0
+    current_user = session['username']
+    selected_user = current_user  # Default to self
 
-    genre_data = {}
-    for r in user_reviews:
-        movie = Movie.query.get(r.movie_id)
-        if movie and movie.genres:
-            for g in movie.genres.split(","):
-                genre_data[g.strip()] = genre_data.get(g.strip(), 0) + 1
+    # Get users who shared analytics with current user
+    shared_with_me = AnalyticsShare.query.filter_by(viewer_username=current_user).all()
+    allowed_usernames = [s.owner_username for s in shared_with_me]
 
-    return render_template("visualize.html", reviewed_count=reviewed_count, avg_rating=avg_rating, genre_data=genre_data)
+    # Set up the WTForm
+    form = AnalyticsViewerForm()
+    form.friend_username.choices = [(current_user, "Yourself")] + [(u, u) for u in allowed_usernames]
+
+    # Handle form submission
+    if form.validate_on_submit():
+        selected_user = form.friend_username.data
+        if selected_user != current_user and selected_user not in allowed_usernames:
+            flash("You don't have access to view this user's analytics.", "danger")
+            return redirect(url_for('movies.visualize'))
+
+    # Fetch reviews
+    reviews = Review.query.filter_by(username=selected_user).all()
+    reviewed_count = len(reviews)
+    avg_rating = round(sum([r.rating for r in reviews]) / reviewed_count, 2) if reviewed_count else 0
+
+    # Genre breakdown
+    genre_counts = {}
+    for r in reviews:
+        if r.movie and r.movie.genres:
+            for genre in r.movie.genres.split(','):
+                genre = genre.strip()
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+
+    return render_template(
+        "visualize.html",
+        form=form,
+        reviewed_count=reviewed_count,
+        avg_rating=avg_rating,
+        genre_data=genre_counts,
+        selected_user=selected_user
+    )
 
 @movies.route("/see_reviews", methods=["GET", "POST"])
 def see_reviews():

@@ -16,5 +16,6 @@ from app.users.routes import users
 from app.movies.routes import movies
 
 app.register_blueprint(main)
-app.register_blueprint(users)
+from app.users.routes import users
+app.register_blueprint(users, url_prefix="/users")
 app.register_blueprint(movies)

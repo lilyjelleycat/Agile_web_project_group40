@@ -1,9 +1,9 @@
-from flask import Blueprint, session, render_template, redirect, url_for, flash
+from flask import Blueprint, session, render_template, redirect, url_for, flash,request,jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.users.forms import RegistrationForm, LoginForm
 from app.movies.forms import SearchForm
-from app.models import Member, UserRole,Review
+from app.models import Member, UserRole,Review,AnalyticsShare,ReviewShare
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
@@ -64,3 +64,42 @@ def profile():
     reviews = Review.query.filter_by(username=user.username).all()
 
     return render_template('profile.html', user=user, reviews=reviews)
+
+@users.route('/search_user')
+def search_user():
+    q = request.args.get("q", "").strip()
+    print(f"QUERY: {q}")  # ← Add this
+    if 'username' not in session or not q:
+        return jsonify([])
+
+    current_user = session['username']
+    users = Member.query.filter(Member.username.ilike(f"%{q}%")).all()
+    usernames = [u.username for u in users if u.username != current_user]
+    print(f"FOUND USERS: {usernames}")  # ← Add this too
+    return jsonify(usernames)
+
+@users.route('/save_shares', methods=['POST'])
+def save_shares():
+    if 'username' not in session:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    current_user = session['username']
+    shares = data.get("shares", [])  # Format: [{username: 'alex', review: true, analytics: false}]
+
+    # Clear old shares
+    ReviewShare.query.filter_by(owner_username=current_user).delete()
+    AnalyticsShare.query.filter_by(owner_username=current_user).delete()
+
+    # Save new selections
+    for entry in shares:
+        user = entry.get("username")
+        if not user:
+            continue
+        if entry.get("review"):
+            db.session.add(ReviewShare(owner_username=current_user, viewer_username=user))
+        if entry.get("analytics"):
+            db.session.add(AnalyticsShare(owner_username=current_user, viewer_username=user))
+
+    db.session.commit()
+    return jsonify({'message': 'Success'}), 200

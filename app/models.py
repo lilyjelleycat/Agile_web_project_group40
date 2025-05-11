@@ -68,6 +68,19 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     content = db.Column(db.Text, nullable=True)
     movie = db.relationship('Movie')
+#Share analytics
+
+class AnalyticsShare(db.Model):
+    __tablename__ = 'analytics_share'
+    id = db.Column(db.Integer, primary_key=True)
+    owner_username = db.Column(db.String, db.ForeignKey('member.username'), nullable=False)
+    viewer_username = db.Column(db.String, db.ForeignKey('member.username'), nullable=False)
 
     def __repr__(self):
         return f'<Review {self.movie_id} by {self.username}>'
+
+class ReviewShare(db.Model):
+    __tablename__ = 'review_share'
+    id = db.Column(db.Integer, primary_key=True)
+    owner_username = db.Column(db.String, db.ForeignKey('member.username'), nullable=False)
+    viewer_username = db.Column(db.String, db.ForeignKey('member.username'), nullable=False)
