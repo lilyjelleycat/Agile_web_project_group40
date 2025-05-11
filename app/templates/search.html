@@ -9,7 +9,6 @@
       <legend></legend>
       {% for field in [form.searchString] %}
       <div class="form-group">
-        {{ field.label(class="form-control-label") }}
         {{ field(class="styled-input" + (' error-field' if field.errors else '')) }}
         {% for error in field.errors %}
         <div class="error-msg">{{ error }}</div>
