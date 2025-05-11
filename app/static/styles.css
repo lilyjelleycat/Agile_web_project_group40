@@ -377,17 +377,20 @@ canvas {
   
   .btn-warning {
     background-color: #fbbc04;
-    border: none;
     color: #000;
     font-weight: bold;
     font-size: 1rem;
-    padding: 12px;
+    padding: 10px 20px;
+    border: none;
     border-radius: 6px;
-    width: auto%;
+    width: auto;
     margin-top: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block;
+    text-align: center;
   }
+  
   
   .btn-warning:hover {
     background-color: #ffcc33;
