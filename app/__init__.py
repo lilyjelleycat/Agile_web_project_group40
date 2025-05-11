@@ -1,13 +1,20 @@
-from flask import Flask
-from flask_migrate import Migrate
+from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
-from app.config import Config
 
+# Flask app setup
 app = Flask(__name__)
-app.config.from_object(Config)
+app.secret_key = "6d3004e6e97c22637776fa971762d915"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize SQLAlchemy
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
-if __name__ == "__main__":
-    app.run()
+# Register Blueprints
+from app.main.routes import main
+from app.users.routes import users
+from app.movies.routes import movies
+
+app.register_blueprint(main)
+app.register_blueprint(users)
+app.register_blueprint(movies)
