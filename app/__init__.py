@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 
 # Flask app setup
@@ -8,8 +8,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
-print('---------------------->', 'SQLAlchemy initializing')
 db = SQLAlchemy(app)
-print('---------------------->', 'SQLAlchemy initialized')
 
-from app import routes
+# Register Blueprints
+from app.main.routes import main
+from app.users.routes import users
+from app.movies.routes import movies
+
+app.register_blueprint(main)
+app.register_blueprint(users)
+app.register_blueprint(movies)

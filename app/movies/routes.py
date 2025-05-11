@@ -1,67 +1,18 @@
-from flask import render_template, request, redirect, url_for, session, jsonify, flash
-from app import app, db
-from app.forms import RegistrationForm, LoginForm
-from app.models import Movie, Member, Review
-from werkzeug.security import generate_password_hash, check_password_hash
-import os
+from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify
+from app import db
+from app.models import Movie, Review
 
+# Blueprint for movie routes
+movies = Blueprint('movies', __name__)
 
 # Routes
-@app.route("/")
-def home():
-    if "username" in session:
-        return redirect(url_for("search"))
-    return render_template("index.html")
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    form = RegistrationForm()
-    
-    if form.validate_on_submit():
-        username = form.username.data
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        email = form.email.data
-        password = generate_password_hash(form.password.data)
-        
-        new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, hashPwd=password)
-        db.session.add(new_member)
-        db.session.commit()
-        
-        flash(f'Account created for {form.username.data}!', 'success')
-        return redirect(url_for("login"))
-    return render_template("register.html", form=form)
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    form = LoginForm()
-    
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        
-        member = Member.query.filter_by(username=username).first()
-        
-        if member and check_password_hash(member.hashPwd, password):
-            session["username"] = member.username
-            flash(f'Welcome back, {member.username}!', 'success')
-            return render_template("search.html")
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
-    return render_template("login.html", form=form)
-
-@app.route("/logout")
-def logout():
-    session.pop("username", None)
-    return redirect(url_for("home"))
-
-@app.route("/search")
+@movies.route("/search")
 def search():
-    if 'user' not in session:
-        return redirect(url_for('home'))
+    if 'username' not in session:
+        return redirect(url_for('main.home'))
     return render_template("search.html")
 
-@app.route("/autocomplete")
+@movies.route("/autocomplete")
 def autocomplete():
     q = request.args.get("q", "")
     if q:
@@ -69,10 +20,10 @@ def autocomplete():
         return jsonify([[m.primaryTitle, m.tconst] for m in results])
     return jsonify([])
 
-@app.route("/movie/<tconst>", methods=["GET", "POST"])
+@movies.route("/movie/<tconst>", methods=["GET", "POST"])
 def movie_detail(tconst):
     if "username" not in session:
-        return redirect(url_for("login"))
+        return redirect(url_for("user.login"))
     movie = Movie.query.filter_by(tconst=tconst).first()
     if not movie:
         return "Movie not found", 404
@@ -93,14 +44,14 @@ def movie_detail(tconst):
         )
         db.session.add(new_review)
         db.session.commit()
-        return redirect(url_for("movie_detail", tconst=tconst))
+        return redirect(url_for("movies.movie_detail", tconst=tconst))
 
     return render_template("movie_detail.html", movie=movie, reviews=reviews, avg_rating=avg_rating)
 
-@app.route("/visualize")
+@movies.route("/visualize")
 def visualize():
     if "username" not in session:
-        return redirect(url_for("login"))
+        return redirect(url_for("user.login"))
 
     username = session["username"]
     user_reviews = Review.query.filter_by(username=username).all()
@@ -116,10 +67,10 @@ def visualize():
 
     return render_template("visualize.html", reviewed_count=reviewed_count, avg_rating=avg_rating, genre_data=genre_data)
 
-@app.route("/see-reviews", methods=["GET", "POST"])
+@movies.route("/see-reviews", methods=["GET", "POST"])
 def see_reviews():
     if "username" not in session:
-        return redirect(url_for("login"))
+        return redirect(url_for("user.login"))
 
     username = session["username"]
 
@@ -132,12 +83,12 @@ def see_reviews():
             review.content = new_content
             review.rating = new_rating
             db.session.commit()
-        return redirect(url_for("see_reviews"))
+        return redirect(url_for("movies.see_reviews"))
 
     user_reviews = Review.query.filter_by(username=username).all()
     return render_template("see_reviews.html", reviews=user_reviews)
 
-@app.route("/review/<int:review_id>")
+@movies.route("/review/<int:review_id>")
 def view_shared_review(review_id):
     review = Review.query.get(review_id)
     if not review:
@@ -145,14 +96,9 @@ def view_shared_review(review_id):
     movie = Movie.query.get(review.movie_id)
     return render_template("share_review.html", review=review, movie=movie)
 
-@app.route("/share-reviews")
+@movies.route("/share-reviews")
 def share_reviews():
     if "username" not in session:
-        return redirect(url_for("login"))
+        return redirect(url_for("main.login"))
     reviews = Review.query.filter_by(username=session["username"]).all()
     return render_template("share_reviews.html", reviews=reviews)
-
-@app.route("/test-db")
-def test_db():
-    count = Movie.query.count()
-    return f"DB Connected! Found {count} movie(s)." if count else "DB Connected, but no movie data found."

@@ -6,9 +6,9 @@
   <p class="lead mb-4 text-secondary">
     Explore IMDb's Top 100 Movies. Review them. Track your progress. Visualize your taste.
   </p>
-  <a href="{{ url_for('login') }}" class="homepage-login-btn">Login</a>
+  <a href="{{ url_for('users.login') }}" class="homepage-login-btn">Login</a>
   <p class="mt-3">
-    <a href="{{ url_for('register') }}" class="text-warning fw-bold">Don't have an account? Register here.</a>
+    <a href="{{ url_for('users.register') }}" class="text-warning fw-bold">Don't have an account? Register here.</a>
   </p>
 </div>
 {% endblock %}
