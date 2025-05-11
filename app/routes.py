@@ -1,18 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
-from forms import RegistrationForm, LoginForm
+from flask import render_template, request, redirect, url_for, session, jsonify, flash
+from app import app, db
+from app.forms import RegistrationForm, LoginForm
+from app.models import Movie, Member, Review
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, Movie, Member, Review, Role, UserRole
-from sqlalchemy import func
 import os
 
-# Flask app setup
-app = Flask(__name__)
-app.secret_key = "6d3004e6e97c22637776fa971762d915"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../movies.db' 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize SQLAlchemy
-db.init_app(app)
 
 # Routes
 @app.route("/")
@@ -168,15 +160,3 @@ def share_reviews():
 def test_db():
     count = Movie.query.count()
     return f"DB Connected! Found {count} movie(s)." if count else "DB Connected, but no movie data found."
-
-
-
-# Run the app
-if __name__ == "__main__":
-    if os.path.exists("movies.db"):
-        with app.app_context():
-            db.create_all()
-    else:
-        raise RuntimeError("movies.db not found in app/ directory. Please place it there before running the app.")
-    
-    app.run(debug=True)
