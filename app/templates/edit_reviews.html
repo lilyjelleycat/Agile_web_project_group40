@@ -5,67 +5,60 @@
 <div class="container py-5 text-light text-center">
   <h2 class="text-warning mb-4">Search & Edit Your Review</h2>
 
-  <!-- Search Input -->
-  <input id="searchInput" type="text" class="form-control styled-input mx-auto" placeholder="Search for a movie..." style="max-width: 600px;">
-  <ul id="autocompleteResults" class="list-group mt-2 mx-auto" style="max-width: 600px; max-height: 300px; overflow-y: auto;"></ul>
+  <!-- Search Box -->
+  <input id="searchInput" type="text" class="form-control styled-input mx-auto" placeholder="Search for a movie...">
+  <ul id="autocompleteResults" class="autocomplete-list mx-auto"></ul>
 
-  <!-- Edit Form if review is found -->
   {% if review %}
-  <div class="review-box mt-5 p-4 bg-dark rounded">
-    <h4 class="text-warning mb-3">{{ review.movie.primaryTitle }} ({{ review.movie.startYear }})</h4>
-    <form method="POST">
-      {{ form.hidden_tag() }}
-      {{ form.review_id(value=review.id) }}
+    <div class="review-box mt-5 p-4 bg-dark rounded">
+      <h4 class="text-warning mb-3">{{ review.movie.primaryTitle }} ({{ review.movie.startYear }})</h4>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.review_id(value=review.id) }}
 
-      <div class="mb-3 text-start">
-        {{ form.rating.label(class="form-label text-warning") }}
-        {{ form.rating(class="form-select") }}
-      </div>
-      <div class="mb-3 text-start">
-        {{ form.content.label(class="form-label text-warning") }}
-        {{ form.content(class="form-control", rows=4) }}
-      </div>
-      <div class="text-center">
-        {{ form.submit(class="btn btn-warning") }}
-      </div>
-    </form>
-  </div>
+        <div class="mb-3 text-start">
+          {{ form.rating.label(class="form-label text-warning") }}
+          {{ form.rating(class="form-select") }}
+        </div>
+        <div class="mb-3 text-start">
+          {{ form.content.label(class="form-label text-warning") }}
+          {{ form.content(class="form-control", rows=4) }}
+        </div>
+        <div class="text-center">
+          {{ form.submit(class="btn btn-warning") }}
+        </div>
+      </form>
+    </div>
   {% elif request.args.get('tconst') %}
-    <div class="alert alert-warning mt-4">You haven't reviewed this movie yet.</div>
+    <div class="mt-4 text-warning">You haven't reviewed this movie yet.</div>
   {% endif %}
 </div>
 
-<!-- Autocomplete Script -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("searchInput");
-    const resultsBox = document.getElementById("autocompleteResults");
+  const searchInput = document.getElementById("searchInput");
+  const resultsBox = document.getElementById("autocompleteResults");
 
-    searchInput.addEventListener("input", async () => {
-      const query = searchInput.value.trim();
-      resultsBox.innerHTML = "";
+  searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim();
+    resultsBox.innerHTML = "";
 
-      if (query.length < 2) return;
+    if (query.length < 2) return;
 
-      try {
-        const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
+    const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}&reviewed_only=1`);
 
-        data.forEach(([title, tconst]) => {
-          const li = document.createElement("li");
-          li.className = "list-group-item list-group-item-action bg-dark text-light";
-          li.textContent = title;
-          li.style.cursor = "pointer";
+    const data = await res.json();
 
-          li.addEventListener("click", () => {
-            window.location.href = `/edit_review?tconst=${tconst}`;
-          });
+    data.forEach(([title, tconst]) => {
+      const li = document.createElement("li");
+      li.className = "list-group-item list-group-item-action";
+      li.textContent = title;
+      li.style.cursor = "pointer";
 
-          resultsBox.appendChild(li);
-        });
-      } catch (err) {
-        console.error("Autocomplete error:", err);
-      }
+      li.addEventListener("click", () => {
+        window.location.href = `/edit_review?tconst=${tconst}`;
+      });
+
+      resultsBox.appendChild(li);
     });
   });
 </script>

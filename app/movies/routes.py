@@ -1,12 +1,11 @@
-from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify,flash
+from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify, flash
 from app import db
 from app.models import Movie, Review, AnalyticsShare, ReviewShare
-from app.movies.forms import SearchForm,AnalyticsViewerForm
+from app.movies.forms import SearchForm, AnalyticsViewerForm, EditReviewForm
 
 # Blueprint for movie routes
 movies = Blueprint('movies', __name__)
 
-# Routes
 @movies.route("/search", methods=["GET", "POST"])
 def search():
     form = SearchForm()
@@ -15,7 +14,7 @@ def search():
     if form.validate_on_submit():
         search_string = form.searchString.data
         results = searchMovies(search_string)
-        
+
         if not results:
             return render_template("search.html", form=form, message="No movies found.")
         else:
@@ -25,10 +24,21 @@ def search():
 @movies.route("/autocomplete")
 def autocomplete():
     q = request.args.get("q", "")
+    reviewed_only = request.args.get("reviewed_only") == "1"
+    username = session.get("username")
+
     if q:
-        results = searchMovies(q)
+        query = Movie.query
+
+        if reviewed_only and username:
+            query = query.join(Review).filter(Review.username == username)
+
+        query = query.filter(Movie.primaryTitle.ilike(f"%{q}%"))
+        results = query.limit(10).all()
         return jsonify([[m.primaryTitle, m.tconst] for m in results])
+
     return jsonify([])
+
 
 def searchMovies(searchString):
     titleQuery1 = Movie.query.filter(Movie.primaryTitle.ilike(f"%{searchString}%"))
@@ -41,11 +51,10 @@ def searchMovies(searchString):
 
     return titleQuery1.union(titleQuery2).union(dirQuery).union(star1Query).union(star2Query).union(star3Query).union(star4Query).all()
 
-
 @movies.route("/movie/<tconst>", methods=["GET", "POST"])
 def movie_detail(tconst):
     if "username" not in session:
-        return redirect(url_for("user.login"))
+        return redirect(url_for("users.login"))
     movie = Movie.query.filter_by(tconst=tconst).first()
     if not movie:
         return "Movie not found", 404
@@ -76,29 +85,24 @@ def visualize():
         return redirect(url_for('users.login'))
 
     current_user = session['username']
-    selected_user = current_user  # Default to self
+    selected_user = current_user
 
-    # Get users who shared analytics with current user
     shared_with_me = AnalyticsShare.query.filter_by(viewer_username=current_user).all()
     allowed_usernames = [s.owner_username for s in shared_with_me]
 
-    # Set up the WTForm
     form = AnalyticsViewerForm()
     form.friend_username.choices = [(current_user, "Yourself")] + [(u, u) for u in allowed_usernames]
 
-    # Handle form submission
     if form.validate_on_submit():
         selected_user = form.friend_username.data
         if selected_user != current_user and selected_user not in allowed_usernames:
             flash("You don't have access to view this user's analytics.", "danger")
             return redirect(url_for('movies.visualize'))
 
-    # Fetch reviews
     reviews = Review.query.filter_by(username=selected_user).all()
     reviewed_count = len(reviews)
     avg_rating = round(sum([r.rating for r in reviews]) / reviewed_count, 2) if reviewed_count else 0
 
-    # Genre breakdown
     genre_counts = {}
     for r in reviews:
         if r.movie and r.movie.genres:
@@ -115,26 +119,36 @@ def visualize():
         selected_user=selected_user
     )
 
-@movies.route("/see_reviews", methods=["GET", "POST"])
-def see_reviews():
+@movies.route("/edit_review", methods=["GET", "POST"])
+def edit_review():
     if "username" not in session:
-        return redirect(url_for("user.login"))
+        return redirect(url_for("users.login"))
 
+    form = EditReviewForm()
     username = session["username"]
+    review = None
+    tconst = request.args.get("tconst")
+    no_review_msg = None
 
-    if request.method == "POST":
-        review_id = request.form["review_id"]
-        new_content = request.form["content"]
-        new_rating = float(request.form["rating"])
-        review = Review.query.filter_by(id=review_id, username=username).first()
+    if form.validate_on_submit():
+        review = Review.query.filter_by(id=form.review_id.data, username=username).first()
         if review:
-            review.content = new_content
-            review.rating = new_rating
+            review.rating = int(form.rating.data)
+            review.content = form.content.data
             db.session.commit()
-        return redirect(url_for("movies.see_reviews"))
+            flash("Review updated successfully.", "success")
+            return redirect(url_for("movies.edit_review"))
 
-    user_reviews = Review.query.filter_by(username=username).all()
-    return render_template("see_reviews.html", reviews=user_reviews)
+    elif tconst:
+        review = Review.query.filter_by(username=username, movie_id=tconst).first()
+        if review:
+            form.review_id.data = review.id
+            form.rating.data = str(review.rating)
+            form.content.data = review.content
+        else:
+            no_review_msg = "You haven't reviewed this movie yet."
+
+    return render_template("edit_reviews.html", form=form, review=review, no_review_msg=no_review_msg)
 
 @movies.route("/review/<int:review_id>")
 def view_shared_review(review_id):
@@ -147,7 +161,7 @@ def view_shared_review(review_id):
 @movies.route("/share_reviews")
 def share_reviews():
     if "username" not in session:
-        return redirect(url_for("main.login"))
+        return redirect(url_for("users.login"))
 
     username = session["username"]
 
@@ -162,4 +176,3 @@ def share_reviews():
         shared_status.setdefault(a.viewer_username, {})["analytics"] = True
 
     return render_template("share_reviews.html", shared_status=shared_status)
-
