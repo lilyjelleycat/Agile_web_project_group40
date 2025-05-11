@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 from app.users.forms import RegistrationForm, LoginForm
 from app.movies.forms import SearchForm
-from app.models import Member
+from app.models import Member, UserRole
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
@@ -20,8 +20,12 @@ def register():
         email = regForm.email.data
         password = generate_password_hash(regForm.password.data)
         
+        # Create user and assign the default role
         new_member = Member(username=username, firstName=first_name, lastName=last_name, email=email, hashPwd=password)
         db.session.add(new_member)
+        
+        user_role = UserRole(username=username, role='user')
+        db.session.add(user_role)
         db.session.commit()
         
         flash(f'Account created for {regForm.username.data}!', 'success')
