@@ -409,6 +409,7 @@ canvas {
     text-decoration: underline;
   }
   
+  
 /* === Responsive === */
 @media (max-width: 600px) {
     .container {
