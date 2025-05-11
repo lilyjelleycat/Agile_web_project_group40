@@ -19,10 +19,7 @@ def search():
         if not results:
             return render_template("search.html", form=form, message="No movies found.")
         else:
-            print("Results:")
-            for movie in results:
-                print(f"Title: {movie.primaryTitle}, Year: {movie.startYear}, Genre: {movie.genres}")
-            return render_template("search.html", form=form)
+            return render_template("search_results.html", movies=results)
     return render_template("search.html", form=form)
 
 @movies.route("/autocomplete")
