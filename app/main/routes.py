@@ -8,7 +8,6 @@ main = Blueprint('main', __name__)
 @main.route("/")
 @main.route("/home")
 def home():
-    print('In home route')
     return render_template("index.html")
     # if "username" in session:
     #     return redirect(url_for("movies.search"))

@@ -1,24 +1,49 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify
 from app import db
 from app.models import Movie, Review
+from app.movies.forms import SearchForm
 
 # Blueprint for movie routes
 movies = Blueprint('movies', __name__)
 
 # Routes
-@movies.route("/search")
+@movies.route("/search", methods=["GET", "POST"])
 def search():
+    form = SearchForm()
     if 'username' not in session:
         return redirect(url_for('main.home'))
-    return render_template("search.html")
+    if form.validate_on_submit():
+        search_string = form.searchString.data
+        results = searchMovies(search_string)
+        
+        if not results:
+            return render_template("search.html", form=form, message="No movies found.")
+        else:
+            print("Results:")
+            for movie in results:
+                print(f"Title: {movie.primaryTitle}, Year: {movie.startYear}, Genre: {movie.genres}")
+            return render_template("search.html", form=form)
+    return render_template("search.html", form=form)
 
 @movies.route("/autocomplete")
 def autocomplete():
     q = request.args.get("q", "")
     if q:
-        results = Movie.query.filter(Movie.primaryTitle.ilike(f"%{q}%")).limit(10).all()
+        results = searchMovies(q)
         return jsonify([[m.primaryTitle, m.tconst] for m in results])
     return jsonify([])
+
+def searchMovies(searchString):
+    titleQuery1 = Movie.query.filter(Movie.primaryTitle.ilike(f"%{searchString}%"))
+    titleQuery2 = Movie.query.filter(Movie.originalTitle.ilike(f"%{searchString}%"))
+    dirQuery = Movie.query.filter(Movie.Director.ilike(f"%{searchString}%"))
+    star1Query = Movie.query.filter(Movie.Star1.ilike(f"%{searchString}%"))
+    star2Query = Movie.query.filter(Movie.Star2.ilike(f"%{searchString}%"))
+    star3Query = Movie.query.filter(Movie.Star3.ilike(f"%{searchString}%"))
+    star4Query = Movie.query.filter(Movie.Star4.ilike(f"%{searchString}%"))
+
+    return titleQuery1.union(titleQuery2).union(dirQuery).union(star1Query).union(star2Query).union(star3Query).union(star4Query).all()
+
 
 @movies.route("/movie/<tconst>", methods=["GET", "POST"])
 def movie_detail(tconst):
