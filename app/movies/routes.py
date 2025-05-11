@@ -89,7 +89,7 @@ def visualize():
 
     return render_template("visualize.html", reviewed_count=reviewed_count, avg_rating=avg_rating, genre_data=genre_data)
 
-@movies.route("/see-reviews", methods=["GET", "POST"])
+@movies.route("/see_reviews", methods=["GET", "POST"])
 def see_reviews():
     if "username" not in session:
         return redirect(url_for("user.login"))
@@ -118,7 +118,7 @@ def view_shared_review(review_id):
     movie = Movie.query.get(review.movie_id)
     return render_template("share_review.html", review=review, movie=movie)
 
-@movies.route("/share-reviews")
+@movies.route("/share_reviews")
 def share_reviews():
     if "username" not in session:
         return redirect(url_for("main.login"))
