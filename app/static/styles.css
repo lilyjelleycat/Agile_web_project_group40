@@ -33,9 +33,9 @@ nav {
     max-width: 600px;
     margin: 60px auto;
     padding: 30px;
-    background-color: #161b22;
+    background-color: #0d1117;
     border-radius: 12px;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+    box-shadow:none;
 }
 
 /* === Form Elements === */
@@ -78,7 +78,7 @@ button,
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
-    width: 100%;
+    width: auto;
 }
 
 button:hover,
@@ -383,7 +383,7 @@ canvas {
     font-size: 1rem;
     padding: 12px;
     border-radius: 6px;
-    width: 100%;
+    width: auto%;
     margin-top: 1rem;
     cursor: pointer;
     transition: background-color 0.3s;
