@@ -85,10 +85,11 @@
 
   input.addEventListener("input", async function () {
     const query = this.value.trim();
+    console.log("Query:", query);
     results.innerHTML = "";
     if (query.length < 2) return;
 
-    const res = await fetch(`/users/search_user?q=${encodeURIComponent(query)}`);
+    const res = await fetch(`/search_user?q=${encodeURIComponent(query)}`);
     const users = await res.json();
 
     if (users.length === 0) {

@@ -75,9 +75,11 @@ def profile():
 @login_required
 def search_user():
     q = request.args.get("q", "").strip()
+    print(f"Search query: {q}")
     users = Member.query.filter(Member.username.ilike(f"%{q}%")).all()
     usernames = [u.username for u in users if u.username != current_user.username]
     return jsonify(usernames)
+
 
 @users.route("/save_shares", methods=['POST'])
 @login_required
