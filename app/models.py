@@ -97,6 +97,7 @@ class AnalyticsShare(db.Model):
 
     def __repr__(self):
         return f'<Review {self.movie_id} by {self.username}>'
+#Share reviews
 
 class ReviewShare(db.Model):
     __tablename__ = 'review_share'

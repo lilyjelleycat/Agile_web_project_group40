@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for, jsonify, flash
 from app import db
-from app.models import Movie, Review, AnalyticsShare, ReviewShare
+from app.models import Movie, Review, AnalyticsShare, ReviewShare,Member
 from app.movies.forms import SearchForm, AnalyticsViewerForm, EditReviewForm
 from app.movies.utils import searchMovies
 from flask_login import login_required, current_user
