@@ -1,13 +1,16 @@
 /* === Base Settings === */
-body {
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-    background-color: #0d1117;
-    color: #f0f0f0;
+html, body {
     margin: 0;
     padding: 0;
+    background-color: #0d1117 !important;
+    color: white;
+    height: 100%;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
-nav {
+/* === Navbar Styling === */
+nav,
+.navbar {
     background-color: #0d1117 !important;
 }
 
@@ -18,13 +21,13 @@ nav {
 }
 
 .nav-link {
-    color: #ffd700 !important;
+    color: #fbbc04 !important;
     font-size: 15px;
     margin-right: 15px;
 }
 
 .nav-link:hover {
-    color: white !important;
+    text-decoration: underline;
 }
 
 /* === Generic Container Styling === */
@@ -35,7 +38,7 @@ nav {
     padding: 30px;
     background-color: #0d1117;
     border-radius: 12px;
-    box-shadow:none;
+    box-shadow: none;
 }
 
 /* === Form Elements === */
@@ -342,25 +345,25 @@ canvas {
     min-height: 100vh;
     background-color: #0d1117;
     padding: 40px 20px;
-  }
-  
-  .auth-container {
+}
+
+.auth-container {
     width: 100%;
     max-width: 420px;
     padding: 0 1rem;
     background: transparent;
     box-shadow: none;
-  }
-  
-  legend {
+}
+
+legend {
     text-align: center;
     font-size: 2rem;
     color: #fbbc04;
     margin-bottom: 2rem;
     font-weight: 600;
-  }
-  
-  .form-control {
+}
+
+.form-control {
     background-color: #161b22;
     border: 1px solid #2c2f36;
     color: #f0f0f0;
@@ -369,13 +372,13 @@ canvas {
     width: 100%;
     margin-bottom: 1rem;
     font-size: 1rem;
-  }
-  
-  .form-control::placeholder {
+}
+
+.form-control::placeholder {
     color: #999;
-  }
-  
-  .btn-warning {
+}
+
+.btn-warning {
     background-color: #fbbc04;
     color: #000;
     font-weight: bold;
@@ -389,61 +392,59 @@ canvas {
     transition: background-color 0.3s ease, color 0.3s ease;
     display: inline-block;
     text-align: center;
-  }
-  
-  
-  .btn-warning:hover {
+}
+
+.btn-warning:hover {
     background-color: #ffcc33;
-  }
-  
-  .auth-footer {
+}
+
+.auth-footer {
     margin-top: 1.5rem;
     text-align: center;
     font-size: 0.9rem;
     color: #ccc;
-  }
-  
-  .auth-footer a {
+}
+
+.auth-footer a {
     color: #fbbc04;
     font-weight: 500;
-  }
-  
-  .auth-footer a:hover {
+}
+
+.auth-footer a:hover {
     text-decoration: underline;
-  }
-  /* === Profile Page Styling === */
+}
+
+/* === Profile Page Styling === */
 .profile-container {
     padding: 40px 20px;
     max-width: 800px;
     margin: auto;
     color: #f0f0f0;
-  }
-  
-  .profile-card {
+}
+
+.profile-card {
     background-color: #161b22;
     padding: 30px;
     border: 1px solid #333;
     border-radius: 12px;
     margin-bottom: 40px;
-  }
-  
-  .profile-card h4,
-  .profile-card p,
-  .profile-card strong {
+}
+
+.profile-card h4,
+.profile-card p,
+.profile-card strong {
     color: #fbbc04;
-  }
-  
-  .profile-reviews {
+}
+
+.profile-reviews {
     background-color: #0d1117;
     border: 1px solid #333;
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
     color: #f0f0f0;
-  }
+}
 
-  
-  
 /* === Responsive === */
 @media (max-width: 600px) {
     .container {
