@@ -1,18 +1,10 @@
-<<<<<<< HEAD
 from flask import Blueprint, session, render_template, redirect, url_for, flash, request, jsonify
-=======
-from flask import Blueprint, session, render_template, request, redirect, url_for, flash
->>>>>>> main
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
 from app.users.forms import RegistrationForm, LoginForm
-<<<<<<< HEAD
 from app.movies.forms import SearchForm
 from app.models import Member, UserRole, Review, AnalyticsShare, ReviewShare
-=======
-from app.models import Member, UserRole
 from flask_login import login_required, login_user, logout_user, current_user
->>>>>>> main
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
@@ -67,43 +59,35 @@ def login():
 @users.route("/logout")
 @login_required
 def logout():
-<<<<<<< HEAD
-    session.pop("username", None)
+    logout_user()
+    flash('You have been logged out!', 'info')
     return redirect(url_for("main.home"))
 
 @users.route("/profile")
+@login_required
 def profile():
-    if 'username' not in session:
-        return redirect(url_for('users.login'))
-
-    user = Member.query.get(session['username'])
+    user = Member.query.get(current_user.username)
     reviews = Review.query.filter_by(username=user.username).all()
 
     return render_template('profile.html', user=user, reviews=reviews)
 
 @users.route("/search_user")
+@login_required
 def search_user():
     q = request.args.get("q", "").strip()
-    if 'username' not in session or not q:
-        return jsonify([])
-
-    current_user = session['username']
     users = Member.query.filter(Member.username.ilike(f"%{q}%")).all()
-    usernames = [u.username for u in users if u.username != current_user]
+    usernames = [u.username for u in users if u.username != current_user.username]
     return jsonify(usernames)
 
 @users.route("/save_shares", methods=['POST'])
+@login_required
 def save_shares():
-    if 'username' not in session:
-        return jsonify({'error': 'Unauthorized'}), 403
-
     data = request.get_json()
-    current_user = session['username']
-    shares = data.get("shares", [])  # Format: [{username: 'alex', review: true, analytics: false}]
+    shares = data.get("shares", []) # Expecting a list of dictionaries with usernames and share types
 
     # Remove old shares
-    ReviewShare.query.filter_by(owner_username=current_user).delete()
-    AnalyticsShare.query.filter_by(owner_username=current_user).delete()
+    ReviewShare.query.filter_by(owner_username=current_user.username).delete()
+    AnalyticsShare.query.filter_by(owner_username=current_user.username).delete()
 
     # Save new selections
     for entry in shares:
@@ -111,23 +95,19 @@ def save_shares():
         if not user:
             continue
         if entry.get("review"):
-            db.session.add(ReviewShare(owner_username=current_user, viewer_username=user))
+            db.session.add(ReviewShare(owner_username=current_user.username, viewer_username=user))
         if entry.get("analytics"):
-            db.session.add(AnalyticsShare(owner_username=current_user, viewer_username=user))
+            db.session.add(AnalyticsShare(owner_username=current_user.username, viewer_username=user))
 
     db.session.commit()
     return jsonify({'message': 'Success'}), 200
 
 @users.route("/share", methods=["GET"])
+@login_required
 def share():
-    if "username" not in session:
-        return redirect(url_for("users.login"))
-
-    current_user = session["username"]
-
     # Get sharing records
-    review_shares = ReviewShare.query.filter_by(owner_username=current_user).all()
-    analytics_shares = AnalyticsShare.query.filter_by(owner_username=current_user).all()
+    review_shares = ReviewShare.query.filter_by(owner_username=current_user.username).all()
+    analytics_shares = AnalyticsShare.query.filter_by(owner_username=current_user.username).all()
 
     # Merge sharing state
     shared_status = {}
@@ -139,8 +119,4 @@ def share():
         shared_status.setdefault(a.viewer_username, {})["analytics"] = True
 
     return render_template("share.html", shared_status=shared_status)
-=======
-    logout_user()
-    flash('You have been logged out!', 'info')
-    return redirect(url_for("main.home"))
->>>>>>> main
+
