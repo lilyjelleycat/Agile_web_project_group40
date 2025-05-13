@@ -33,10 +33,22 @@
           {% endif %}
         </div>
 
+        <div class="form-group">
+          {{ form.remember.label(class="form-control-label") }}
+          {% if form.remember.errors %}
+            {{ form.remember(class="form-control is-invalid") }}
+            {% for error in form.remember.errors %}
+              <div class="error-msg">{{ error }}</div>
+            {% endfor %}
+          {% else %}
+            {{ form.remember(class="form-control") }}
+          {% endif %}
+        </div>
+
         <div class="form-group d-flex justify-content-center">
           {{ form.submit(class="btn btn-warning") }}
         </div>
-
+        
         <div class="auth-footer">
           <p>New here? <a href="{{ url_for('users.register') }}">Create an account</a></p>
         </div>

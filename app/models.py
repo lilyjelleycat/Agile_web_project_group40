@@ -1,4 +1,9 @@
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Member.query.get(user_id)
 
 # Movie Table
 
@@ -18,13 +23,15 @@ class Movie(db.Model):
     Star2 = db.Column(db.Text)
     Star3 = db.Column(db.Text)
     Star4 = db.Column(db.Text)
-
+    Overview = db.Column(db.Text)
+    reviews = db.relationship('Review', backref='has', lazy=True)
 
     def __repr__(self):
         return f'<Movie {self.primaryTitle}>'
 
 # User Table (Members)
-class Member(db.Model):
+# Inheriting from UserMixin to provide default implementations for user authentication
+class Member(db.Model, UserMixin):
     __tablename__ = 'member'
     username = db.Column(db.String, primary_key=True)
     firstName = db.Column(db.String, nullable=False)
@@ -33,7 +40,19 @@ class Member(db.Model):
     hashPwd = db.Column(db.String, nullable=False)
     reviews = db.relationship('Review', backref='member', lazy=True)
     roles = db.relationship('UserRole', backref='member', lazy=True)
-
+    
+    def get_id(self):
+        # This method is used by Flask-Login to get the user ID
+        # Note that we use username here as this is the primary key
+        return self.username
+    
+    def has_role(self, role_name):
+        if self.roles:
+            for role in self.roles:
+                if role.role == role_name:
+                    return True
+        return False
+    
     def __repr__(self):
         return f'<Member {self.username}>'
 
