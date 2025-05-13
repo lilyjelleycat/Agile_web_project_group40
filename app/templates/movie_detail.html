@@ -41,7 +41,9 @@
       {% for review in reviews %}
         <div style="margin-bottom: 20px; padding: 15px; background-color: #0d1117; border-left: 4px solid #fbbc04; border-radius: 6px;">
           <strong style="color: #fbbc04;">{{ review.username }}</strong> rated it <strong>{{ review.rating }}/5</strong>
-          <p style="color: #ccc; margin-top: 8px;">{{ review.content }}</p>
+          {% if review.content %}
+            <p style="color: #ccc; margin-top: 8px;">{{ review.content }}</p>
+          {% endif %}
         </div>
       {% endfor %}
     {% else %}
@@ -49,16 +51,16 @@
     {% endif %}
   </div>
 
-  {% if current_user.has_role('user') %}
+  {% if not existing_review %}
   <div class="p-4" style="width: 100%; max-width: 800px;">
     <h3 style="color: #ffd700;">Leave a Review</h3>
     <form method="POST">
       <div class="star-rating mb-3">
         {% for i in range(5, 0, -1) %}
-          <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}">
+          <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
           <label for="star{{ i }}"><i class="fa fa-star"></i></label>
         {% endfor %}
-      </div>      
+      </div>
       <div class="mb-3">
         <textarea name="content" class="form-control" rows="4" placeholder="Write your review..." required></textarea>
       </div>

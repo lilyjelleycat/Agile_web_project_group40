@@ -40,6 +40,7 @@ class Member(db.Model, UserMixin):
     hashPwd = db.Column(db.String, nullable=False)
     reviews = db.relationship('Review', backref='member', lazy=True)
     roles = db.relationship('UserRole', backref='member', lazy=True)
+    public_reviews = db.Column(db.Boolean, default=False)
     
     def get_id(self):
         # This method is used by Flask-Login to get the user ID

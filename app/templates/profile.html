@@ -9,9 +9,19 @@
     <h4>Username: {{ user.username }}</h4>
     <p><strong>First Name:</strong> {{ user.firstName }}</p>
     <p><strong>Last Name:</strong> {{ user.lastName }}</p>
+
+    <!-- Public Review Toggle -->
+    <div class="form-check form-switch mt-3">
+      <input class="form-check-input" type="checkbox" id="publicToggle" {% if user.public_reviews %}checked{% endif %}>
+      <label class="form-check-label" for="publicToggle">
+        Make all my reviews public
+      </label>
+    </div>
+
+    <div id="publicStatus" class="mt-2 text-success fw-bold" style="display: none;">✅ Updated</div>
   </div>
 
-  <h4 class="text-warning">Your Reviews</h4>
+  <h4 class="text-warning mt-4">Your Reviews</h4>
   {% if reviews %}
     {% for r in reviews %}
     <div class="profile-reviews">
@@ -23,4 +33,27 @@
     <p class="text-muted">You haven’t reviewed any movies yet.</p>
   {% endif %}
 </div>
+
+<script>
+  const toggle = document.getElementById("publicToggle");
+  const status = document.getElementById("publicStatus");
+
+  toggle.addEventListener("change", async function () {
+    const res = await fetch("/profile/toggle_public", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ public: this.checked })
+    });
+
+    if (res.ok) {
+      status.style.display = "block";
+      status.textContent = this.checked ? "✅ Your reviews are now public." : "✅ Your reviews are now private.";
+      setTimeout(() => {
+        status.style.display = "none";
+      }, 2500);
+    }
+  });
+</script>
 {% endblock %}

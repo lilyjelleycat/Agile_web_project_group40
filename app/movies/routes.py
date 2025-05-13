@@ -48,13 +48,28 @@ def movie_detail(tconst):
     movie = Movie.query.filter_by(tconst=tconst).first()
     if not movie:
         return "Movie not found", 404
-    reviews = Review.query.filter_by(movie_id=tconst).all()
+
+    all_reviews = Review.query.filter_by(movie_id=tconst).all()
+    visible_reviews = []
+
+    for review in all_reviews:
+        author = Member.query.get(review.username)
+        if author.public_reviews or review.username == current_user.username:
+            visible_reviews.append(review)
+        else:
+            shared = ReviewShare.query.filter_by(owner_username=review.username, viewer_username=current_user.username).first()
+            if shared:
+                visible_reviews.append(review)
+
     avg_rating = (
-        round(sum(r.rating for r in reviews) / len(reviews), 2)
-        if reviews else None
+        round(sum(r.rating for r in all_reviews) / len(all_reviews), 2)
+        if all_reviews else None
     )
 
-    if request.method == "POST":
+    # Check if current user has already reviewed this movie
+    existing_review = Review.query.filter_by(username=current_user.username, movie_id=tconst).first()
+
+    if request.method == "POST" and not existing_review:
         rating = float(request.form["rating"])
         content = request.form["content"]
         new_review = Review(
@@ -67,7 +82,14 @@ def movie_detail(tconst):
         db.session.commit()
         return redirect(url_for("movies.movie_detail", tconst=tconst))
 
-    return render_template("movie_detail.html", movie=movie, reviews=reviews, avg_rating=avg_rating)
+    return render_template(
+        "movie_detail.html",
+        movie=movie,
+        reviews=visible_reviews,
+        avg_rating=avg_rating,
+        existing_review=existing_review
+    )
+
 
 @movies.route('/visualize', methods=['GET', 'POST'])
 @login_required

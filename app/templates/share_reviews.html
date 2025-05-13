@@ -52,7 +52,7 @@
         payload.push({ username, ...prefs });
       }
     }
-    const res = await fetch("/users/save_shares", {
+    const res = await fetch("/save_shares", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ shares: payload })
