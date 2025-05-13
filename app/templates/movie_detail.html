@@ -48,7 +48,7 @@
     {% endif %}
   </div>
 
-  {% if session.get('username') %}
+  {% if current_user.has_role('user') %}
   <div class="p-4" style="width: 100%; max-width: 800px;">
     <h3 style="color: #ffd700;">Leave a Review</h3>
     <form method="POST">
