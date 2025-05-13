@@ -22,12 +22,6 @@ from app.movies.routes import movies
 from app.admin.routes import admin
 
 app.register_blueprint(main)
-<<<<<<< HEAD
-from app.users.routes import users
-app.register_blueprint(users, url_prefix="/users")
-app.register_blueprint(movies)
-=======
 app.register_blueprint(users)
 app.register_blueprint(movies)
 app.register_blueprint(admin)
->>>>>>> main
