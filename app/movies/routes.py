@@ -3,16 +3,16 @@ from app import db
 from app.models import Movie, Review
 from app.movies.forms import SearchForm
 from app.movies.utils import searchMovies
+from flask_login import login_required, current_user
 
 # Blueprint for movie routes
 movies = Blueprint('movies', __name__)
 
 # Routes
 @movies.route("/search", methods=["GET", "POST"])
+@login_required
 def search():
     form = SearchForm()
-    if 'username' not in session:
-        return redirect(url_for('main.home'))
     if form.validate_on_submit():
         search_string = form.searchString.data
         results = searchMovies(search_string)
@@ -24,6 +24,7 @@ def search():
     return render_template("search.html", form=form)
 
 @movies.route("/autocomplete")
+@login_required
 def autocomplete():
     q = request.args.get("q", "")
     if q:
@@ -32,9 +33,8 @@ def autocomplete():
     return jsonify([])
 
 @movies.route("/movie/<tconst>", methods=["GET", "POST"])
+@login_required
 def movie_detail(tconst):
-    if "username" not in session:
-        return redirect(url_for("user.login"))
     movie = Movie.query.filter_by(tconst=tconst).first()
     if not movie:
         return "Movie not found", 404
@@ -49,7 +49,7 @@ def movie_detail(tconst):
         content = request.form["content"]
         new_review = Review(
             movie_id=tconst,
-            username=session["username"],
+            username=current_user.username,
             rating=rating,
             content=content
         )
@@ -60,11 +60,9 @@ def movie_detail(tconst):
     return render_template("movie_detail.html", movie=movie, reviews=reviews, avg_rating=avg_rating)
 
 @movies.route("/visualize")
+@login_required
 def visualize():
-    if "username" not in session:
-        return redirect(url_for("user.login"))
-
-    username = session["username"]
+    username = current_user.username
     user_reviews = Review.query.filter_by(username=username).all()
     reviewed_count = len(user_reviews)
     avg_rating = round(sum(r.rating for r in user_reviews) / reviewed_count, 2) if reviewed_count else 0
@@ -79,11 +77,9 @@ def visualize():
     return render_template("visualize.html", reviewed_count=reviewed_count, avg_rating=avg_rating, genre_data=genre_data)
 
 @movies.route("/see_reviews", methods=["GET", "POST"])
+@login_required
 def see_reviews():
-    if "username" not in session:
-        return redirect(url_for("user.login"))
-
-    username = session["username"]
+    username = current_user.username
 
     if request.method == "POST":
         review_id = request.form["review_id"]
@@ -100,6 +96,7 @@ def see_reviews():
     return render_template("see_reviews.html", reviews=user_reviews)
 
 @movies.route("/review/<int:review_id>")
+@login_required
 def view_shared_review(review_id):
     review = Review.query.get(review_id)
     if not review:
@@ -108,8 +105,7 @@ def view_shared_review(review_id):
     return render_template("share_review.html", review=review, movie=movie)
 
 @movies.route("/share_reviews")
+@login_required
 def share_reviews():
-    if "username" not in session:
-        return redirect(url_for("main.login"))
-    reviews = Review.query.filter_by(username=session["username"]).all()
+    reviews = Review.query.filter_by(username=current_user.username).all()
     return render_template("share_reviews.html", reviews=reviews)

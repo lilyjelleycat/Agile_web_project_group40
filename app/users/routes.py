@@ -1,9 +1,9 @@
-from flask import Blueprint, session, render_template, redirect, url_for, flash
+from flask import Blueprint, session, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from app import db, login_manager
 from app.users.forms import RegistrationForm, LoginForm
-from app.movies.forms import SearchForm
 from app.models import Member, UserRole
+from flask_login import login_required, login_user, logout_user, current_user
 
 # Blueprint for user-related routes
 users = Blueprint('users', __name__)
@@ -11,6 +11,10 @@ users = Blueprint('users', __name__)
 # Routes
 @users.route("/register", methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        flash('You are already logged in!', 'info')
+        return redirect(url_for("movies.search"))
+    
     regForm = RegistrationForm()
     
     if regForm.validate_on_submit():
@@ -34,39 +38,26 @@ def register():
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        flash('You are already logged in!', 'info')
+        return redirect(url_for("movies.search"))
+    
     loginForm = LoginForm()
     
     if loginForm.validate_on_submit():
-        username = loginForm.username.data
-        password = loginForm.password.data
-        
-        member = Member.query.filter_by(username=username).first()
-        
-        if member and check_password_hash(member.hashPwd, password):
-            session["username"] = member.username
-            
-            # Check if logged in user is an admin
-            if member.isAdministrator():
-                session["isAdmin"] = True
-            else:
-                session["isAdmin"] = False
-            
-            # Check if logged in user is a regular user
-            if member.isUser():
-                session["isUser"] = True
-            else:
-                session["isUser"] = False
-            
-            print('User is an admin:', session["isAdmin"])
-            print('User is a regular user:', session["isUser"])
-            
-            flash(f'Welcome back, {member.username}!', 'success')
-            return redirect(url_for("movies.search"))
+        member = Member.query.filter_by(username=loginForm.username.data).first()
+        if member and check_password_hash(member.hashPwd, loginForm.password.data):
+            login_user(member, remember=loginForm.remember.data)
+            next_page = request.args.get('next')
+            flash(f'Welcome back, {member.username}!', 'info')
+            return redirect(url_for("movies.search")) if not next_page else redirect(next_page)
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template("login.html", form=loginForm)
 
 @users.route("/logout")
+@login_required
 def logout():
-    session.pop("username", None)
+    logout_user()
+    flash('You have been logged out!', 'info')
     return redirect(url_for("main.home"))
