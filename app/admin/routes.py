@@ -4,6 +4,7 @@ from app.models import Movie
 from app.movies.utils import searchMovies
 from app.admin.utils import process_movies_file
 from app import db
+import pandas as pd
 
 # Blueprint for admin-related routes
 admin = Blueprint('admin', __name__)
@@ -17,9 +18,13 @@ def upload_movies():
         if file:
             # Process the uploaded file
             # Assuming the file is a CSV and you have a function to handle it
-            process_movies_file(file)
-            flash('Movies uploaded successfully!', 'success')
-            return redirect(url_for("admin.upload_movies"))
+            try:
+                process_movies_file(file)
+                flash('Movies uploaded successfully!', 'success')
+                return redirect(url_for("admin.upload_movies"))
+            except pd.errors.ParserError as e:
+                flash(f'An error occurred while processing the file: {str(e)}', 'danger')
+                return redirect(url_for("admin.upload_movies"))
         else:
             flash('No file selected!', 'danger')
     return render_template("upload_movies.html", form=uploadMoviesForm)
