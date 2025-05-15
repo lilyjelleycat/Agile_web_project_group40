@@ -19,6 +19,8 @@ users = Blueprint("users", __name__)
 def register():
     if current_user.is_authenticated:
         flash("You are already logged in!", "info")
+        if current_user.has_role('admin'):
+            return redirect(url_for("admin.dashboard"))
         return redirect(url_for("movies.search"))
 
     regForm = RegistrationForm()
@@ -43,6 +45,8 @@ def register():
 def login():
     if current_user.is_authenticated:
         flash("You are already logged in!", "info")
+        if current_user.has_role('admin'):
+            return redirect(url_for("admin.dashboard"))
         return redirect(url_for("movies.search"))
 
     loginForm = LoginForm()
@@ -51,10 +55,13 @@ def login():
         if member and check_password_hash(member.hashPwd, loginForm.password.data):
             login_user(member, remember=loginForm.remember.data)
             flash(f"Welcome back, {member.username}!", "info")
-            next_page = request.args.get("next")
-            return (
-                redirect(next_page) if next_page else redirect(url_for("movies.search"))
-            )
+            if member.has_role('admin'):
+                return redirect(url_for("admin.dashboard"))
+            else:
+                next_page = request.args.get("next")
+                return (
+                    redirect(next_page) if next_page else redirect(url_for("movies.search"))
+                )
         else:
             flash("Login Unsuccessful. Please check username and password", "danger")
 
