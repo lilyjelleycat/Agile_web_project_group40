@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
 from app import db
-from app.users.forms import RegistrationForm, LoginForm
+from app.users.forms import RegistrationForm, LoginForm, ChangePasswordForm, ResetPasswordForm
 from app.movies.forms import SearchForm
 from app.models import Member, UserRole, Review, AnalyticsShare, ReviewShare
 
@@ -57,6 +57,43 @@ def logout():
     logout_user()
     flash('You have been logged out!', 'info')
     return redirect(url_for("main.home"))
+
+@users.route("/change_password", methods=["GET", "POST"])
+@login_required
+def change_password():
+    if current_user.is_authenticated:
+        changeForm = ChangePasswordForm()
+        if changeForm.validate_on_submit():
+            member = Member.query.filter_by(username=current_user.username).first()
+            if member and check_password_hash(member.hashPwd, changeForm.current_password.data):
+                member.hashPwd = generate_password_hash(changeForm.new_password.data)
+                db.session.commit()
+                logout_user()
+                flash('Your password has been updated!', 'success')
+                return redirect(url_for("users.login"))
+            else:
+                flash('Current password is incorrect', 'danger')
+        return render_template("change_user_password.html", form=changeForm)
+    else:
+        flash('You need to be logged in to change your password!', 'info')
+        return redirect(url_for("users.login"))
+
+@users.route("/reset_password", methods=["GET", "POST"])
+def reset_password():
+    resetPasswordForm = ResetPasswordForm()
+    if resetPasswordForm.validate_on_submit():
+        member = Member.query.filter_by(username=resetPasswordForm.username.data).first()
+        if member and resetPasswordForm.email.data == member.email and \
+                      resetPasswordForm.first_name.data == member.firstName and \
+                      resetPasswordForm.last_name.data == member.lastName:
+            member.hashPwd = generate_password_hash(resetPasswordForm.new_password.data)
+            db.session.commit()
+            flash('Your password has been reset!', 'success')
+            return redirect(url_for("users.login"))
+        else:
+            flash('Invalid username or email', 'danger')
+    
+    return render_template("reset_user_password.html", form=resetPasswordForm)
 
 @users.route("/profile")
 @login_required
