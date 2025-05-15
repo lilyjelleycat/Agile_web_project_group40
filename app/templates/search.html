@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Search - CineBuff{% endblock %}
+
 {% block content %}
-<div class="text-center mt-5">
+<!-- Blurred tinted poster background -->
+<div class="background-grid"></div>
+
+<div class="text-center mt-5 position-relative" style="z-index: 2;">
   <h1 class="text-warning mb-4">Search IMDb Top 100 Movies</h1>
   <form method="POST">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">
-      <legend></legend>
       {% for field in [form.searchString] %}
       <div class="form-group">
-        {{ field(class="styled-input" + (' error-field' if field.errors else '')) }}
+        {{ field(id="searchString", class="styled-input" + (' error-field' if field.errors else '')) }}
         {% for error in field.errors %}
         <div class="error-msg">{{ error }}</div>
         {% endfor %}
@@ -48,6 +51,19 @@
     } catch (err) {
       console.error("Error:", err);
     }
+  });
+
+  // Poster background logic
+  const posters = {{ posters | tojson }};
+  const grid = document.querySelector(".background-grid");
+
+  posters.sort(() => 0.5 - Math.random()); // Shuffle the list
+
+  posters.forEach(link => {
+    const img = document.createElement("img");
+    img.src = link;
+    img.alt = "Movie Poster";
+    grid.appendChild(img);
   });
 </script>
 {% endblock %}

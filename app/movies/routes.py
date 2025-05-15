@@ -12,15 +12,19 @@ movies = Blueprint('movies', __name__)
 @login_required
 def search():
     form = SearchForm()
+    posters = db.session.query(Movie.Poster_Link).filter(Movie.Poster_Link != None).limit(50).all()
+    poster_urls = [p[0] for p in posters]
+
     if form.validate_on_submit():
         search_string = form.searchString.data
         results = searchMovies(search_string)
 
         if not results:
-            return render_template("search.html", form=form, message="No movies found.")
+            return render_template("search.html", form=form, message="No movies found.", posters=poster_urls)
         else:
-            return render_template("search_results.html", movies=results)
-    return render_template("search.html", form=form)
+            return render_template("search_results.html", movies=results, posters=poster_urls)
+
+    return render_template("search.html", form=form, posters=poster_urls)
 
 @movies.route("/autocomplete")
 @login_required
