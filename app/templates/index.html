@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Welcome to CineBuff{% endblock %}
+
 {% block content %}
-<div class="d-flex flex-column justify-content-center align-items-center text-center" style="height: 100vh; overflow: hidden;">
+<!-- Background poster grid container -->
+<div class="background-grid"></div>
+
+<!-- Foreground content -->
+<div class="d-flex flex-column justify-content-center align-items-center text-center homepage-content">
   <h1 class="mb-4 text-light">Welcome to CineBuff</h1>
   <p class="lead mb-4 text-secondary">
     Explore IMDb's Top 100 Movies. Review them. Track your progress. Visualize your taste.
@@ -12,4 +17,19 @@
     Forgot your password? Reset it <a href="{{ url_for('users.reset_password') }}" class="text-warning fw-bold">here</a>.
   </p>
 </div>
+
+<!-- Background poster loader script -->
+<script>
+  const posters = {{ posters | tojson }};
+  const grid = document.querySelector(".background-grid");
+
+  posters.sort(() => 0.5 - Math.random()); // Shuffle the list
+
+  posters.forEach(link => {
+    const img = document.createElement("img");
+    img.src = link;
+    img.alt = "Movie Poster";
+    grid.appendChild(img);
+  });
+</script>
 {% endblock %}
