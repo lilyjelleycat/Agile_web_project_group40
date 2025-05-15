@@ -22,7 +22,7 @@ def search():
         if not results:
             return render_template("search.html", form=form, message="No movies found.", posters=poster_urls)
         else:
-            return render_template("search_results.html", movies=results, posters=poster_urls)
+            return render_template("search_results.html", movies=results)
 
     return render_template("search.html", form=form, posters=poster_urls)
 
