@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Manage Sharing{% endblock %}
+
+{% block content %}
+<div class="container text-light py-5">
+  <h2 class="text-warning text-center mb-4">🔗 Share Settings</h2>
+
+  <!-- Search bar -->
+  <input type="text" id="usernameInput" class="form-control" placeholder="Search username...">
+  <ul id="autocompleteResults" class="list-group mt-2 mb-4"></ul>
+
+  <!-- Selected users with toggles -->
+  <div id="selectedUsersList" class="mb-4"></div>
+
+  <!-- Save message -->
+  <div id="saveStatus" class="text-success text-center fw-bold mt-3" style="display: none;">
+    ✅ Settings saved!
+  </div>
+
+  <!-- Already shared list -->
+  <h5 class="text-warning mt-5">Current Sharing:</h5>
+  <ul class="list-group mt-3" id="sharedStatusList">
+    {% for username, perms in shared_status.items() %}
+      <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+        <strong>{{ username }}</strong>
+        <div class="d-flex gap-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input toggle-switch" type="checkbox" data-user="{{ username }}" data-type="review" {% if perms.review %}checked{% endif %}>
+            <label class="form-check-label ms-1">Review</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input toggle-switch" type="checkbox" data-user="{{ username }}" data-type="analytics" {% if perms.analytics %}checked{% endif %}>
+            <label class="form-check-label ms-1">Analytics</label>
+          </div>
+        </div>
+      </li>
+    {% else %}
+      <li class="list-group-item bg-dark text-light">You haven't shared with anyone yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  const saveStatus = document.getElementById("saveStatus");
+  const existingShares = {{ shared_status | tojson | safe }};
+  const selectedShares = new Map(Object.entries(existingShares));
+
+  async function saveToServer() {
+    const payload = [];
+    for (const [username, prefs] of selectedShares.entries()) {
+      if (prefs.review || prefs.analytics) {
+        payload.push({ username, ...prefs });
+      }
+    }
+    const res = await fetch("/save_shares", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shares: payload })
+    });
+
+    showSaveMessage(res.ok);
+  }
+
+  function showSaveMessage(success = true) {
+    saveStatus.style.display = "block";
+    saveStatus.textContent = success ? "✅ Settings saved!" : "⚠️ Failed to save settings";
+    saveStatus.className = success ? "text-success text-center fw-bold mt-3" : "text-danger text-center fw-bold mt-3";
+    setTimeout(() => { saveStatus.style.display = "none"; }, 3000);
+  }
+
+  document.querySelectorAll(".toggle-switch").forEach(toggle => {
+    toggle.addEventListener("change", function () {
+      const user = this.dataset.user;
+      const type = this.dataset.type;
+      const entry = selectedShares.get(user) || { review: false, analytics: false };
+      entry[type] = this.checked;
+      selectedShares.set(user, entry);
+      saveToServer();
+    });
+  });
+
+  const input = document.getElementById("usernameInput");
+  const results = document.getElementById("autocompleteResults");
+  const selectedList = document.getElementById("selectedUsersList");
+
+  input.addEventListener("input", async function () {
+    const query = this.value.trim();
+    console.log("Query:", query);
+    results.innerHTML = "";
+    if (query.length < 2) return;
+
+    const res = await fetch(`/search_user?q=${encodeURIComponent(query)}`);
+    const users = await res.json();
+
+    if (users.length === 0) {
+      results.innerHTML = `<li class="list-group-item text-muted">No users found</li>`;
+    } else {
+      users.forEach(username => {
+        const item = document.createElement("li");
+        item.className = "list-group-item list-group-item-action";
+        item.textContent = username;
+        item.addEventListener("click", function () {
+          if (selectedShares.has(username)) return;
+          addUserWithToggles(username);
+          results.innerHTML = "";
+          input.value = "";
+        });
+        results.appendChild(item);
+      });
+    }
+  });
+
+  function addUserWithToggles(username, reviewShared = false, analyticsShared = false) {
+    selectedShares.set(username, { review: reviewShared, analytics: analyticsShared });
+
+    const container = document.createElement("div");
+    container.className = "list-group-item bg-dark text-light d-flex justify-content-between align-items-center mb-2";
+    container.innerHTML = `
+      <strong>${username}</strong>
+      <div class="d-flex gap-4">
+        <div class="form-check form-switch">
+          <input class="form-check-input toggle-switch" type="checkbox" data-user="${username}" data-type="review" ${reviewShared ? "checked" : ""}>
+          <label class="form-check-label ms-1">Share Review</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input toggle-switch" type="checkbox" data-user="${username}" data-type="analytics" ${analyticsShared ? "checked" : ""}>
+          <label class="form-check-label ms-1">Share Analytics</label>
+        </div>
+      </div>
+    `;
+
+    container.querySelectorAll("input[type='checkbox']").forEach(toggle => {
+      toggle.addEventListener("change", function () {
+        const user = this.dataset.user;
+        const type = this.dataset.type;
+        const entry = selectedShares.get(user) || {};
+        entry[type] = this.checked;
+        selectedShares.set(user, entry);
+        saveToServer();
+      });
+    });
+
+    selectedList.appendChild(container);
+    saveToServer();
+  }
+</script>
+{% endblock %}

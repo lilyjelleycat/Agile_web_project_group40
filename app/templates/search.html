@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Search - CineBuff{% endblock %}
+{% block content %}
+<div class="text-center mt-5">
+  <h1 class="text-warning mb-4">Search IMDb Top 100 Movies</h1>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend></legend>
+      {% for field in [form.searchString] %}
+      <div class="form-group">
+        {{ field(class="styled-input" + (' error-field' if field.errors else '')) }}
+        {% for error in field.errors %}
+        <div class="error-msg">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-warning") }}
+    </div>
+  </form>
+  <ul id="results" class="autocomplete-list mx-auto mt-3"></ul>
+</div>
+
+<script>
+  const input = document.getElementById("searchString");
+  const results = document.getElementById("results");
+
+  input.addEventListener("input", async function () {
+    const query = this.value.trim();
+    results.innerHTML = "";
+
+    if (query.length < 2) return;
+
+    try {
+      const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      if (data.length === 0) {
+        results.innerHTML = `<li class="no-results">No results found</li>`;
+      } else {
+        results.innerHTML = data.map(([title, tconst]) => `
+          <li>
+            <a href="/movie/${tconst}">${title}</a>
+          </li>`).join("");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  });
+</script>
+{% endblock %}

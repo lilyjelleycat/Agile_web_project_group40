@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+ENV/
+app-env/
+
+# VS Code settings
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Flask environment variables
+.env
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# SQLite database (if you don’t want to push it)
+
+
+# Node modules (if you later use npm for frontend tools)
+node_modules/

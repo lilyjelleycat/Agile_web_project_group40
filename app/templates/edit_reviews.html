@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Edit Review{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-light text-center">
+  <h2 class="text-warning mb-4">Search & Edit Your Review</h2>
+
+  <!-- Search Box -->
+  <input id="searchInput" type="text" class="form-control styled-input mx-auto" placeholder="Search for a movie...">
+  <ul id="autocompleteResults" class="autocomplete-list mx-auto"></ul>
+
+  {% if review %}
+    <div class="review-box mt-5 p-4 bg-dark rounded">
+      <h4 class="text-warning mb-3">{{ review.movie.primaryTitle }} ({{ review.movie.startYear }})</h4>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.review_id(value=review.id) }}
+
+        <div class="mb-3 text-start">
+          {{ form.rating.label(class="form-label text-warning") }}
+          {{ form.rating(class="form-select") }}
+        </div>
+        <div class="mb-3 text-start">
+          {{ form.content.label(class="form-label text-warning") }}
+          {{ form.content(class="form-control", rows=4) }}
+        </div>
+        <div class="text-center">
+          {{ form.submit(class="btn btn-warning") }}
+        </div>
+      </form>
+    </div>
+  {% elif request.args.get('tconst') %}
+    <div class="mt-4 text-warning">You haven't reviewed this movie yet.</div>
+  {% endif %}
+</div>
+
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const resultsBox = document.getElementById("autocompleteResults");
+
+  searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim();
+    resultsBox.innerHTML = "";
+
+    if (query.length < 2) return;
+
+    const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}&reviewed_only=1`);
+
+    const data = await res.json();
+
+    data.forEach(([title, tconst]) => {
+      const li = document.createElement("li");
+      li.className = "list-group-item list-group-item-action";
+      li.textContent = title;
+      li.style.cursor = "pointer";
+
+      li.addEventListener("click", () => {
+        window.location.href = `/edit_review?tconst=${tconst}`;
+      });
+
+      resultsBox.appendChild(li);
+    });
+  });
+</script>
+{% endblock %}

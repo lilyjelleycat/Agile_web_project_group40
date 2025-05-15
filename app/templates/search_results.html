@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<table border="1" style="width: 100%; max-width: 800px; margin: auto; border-collapse: collapse;">
+    <tbody>
+        {% for movie in movies %}
+        <tr>
+            <td width=100px style="padding: 10px; background-color: #0d1117; color: #ccc;">
+                  
+                {% if current_user.has_role('admin') %}
+                    <a href="{{ url_for('admin.edit_movie', tconst=movie.tconst) }}">
+                        <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100" />
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('movies.movie_detail', tconst=movie.tconst) }}">
+                        <img src="{{ movie.Poster_Link }}" alt="{{ movie.primaryTitle }} Poster" width="100px" />
+                    </a>
+                {% endif %}
+            </td>
+            <td valign="top" style="padding: 10px; background-color: #0d1117; color: #ccc;">
+                <strong>Title: </strong>{{ movie.primaryTitle }}<br />
+                <strong>Year: </strong>{{ movie.startYear }}<br />
+                <strong>Director: </strong>{{ movie.Director }}<br />
+                <strong>Stars: </strong> {{ movie.Star1 }}, {{ movie.Star2 }}, {{ movie.Star3 }}, {{ movie.Star4 }}<br />
+                <strong>Genre: </strong> {{ movie.genres }}<br />
+            </td>
+        </tr>
+        {% endfor %}
+  <tbody>
+</table>
+{% endblock %}

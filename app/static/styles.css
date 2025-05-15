@@ -1,0 +1,460 @@
+/* === Base Settings === */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0d1117 !important;
+    color: white;
+    height: 100%;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+}
+
+/* === Navbar Styling === */
+nav,
+.navbar {
+    background-color: #0d1117 !important;
+}
+
+.navbar-brand {
+    color: #ffd700 !important;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.nav-link {
+    color: #fbbc04 !important;
+    font-size: 15px;
+    margin-right: 15px;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* === Generic Container Styling === */
+.container {
+    width: 90%;
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: #0d1117;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+/* === Form Elements === */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    padding: 12px 15px;
+    margin: 12px 0;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #0d1117;
+    color: #f0f0f0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* === Button Styling === */
+button,
+.btn,
+.homepage-login-btn {
+    padding: 10px 20px;
+    background-color: #fbbc04;
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    width: auto;
+}
+
+button:hover,
+.btn:hover,
+.homepage-login-btn:hover {
+    background-color: #ffdd57;
+    color: black;
+}
+
+/* === Links === */
+a {
+    color: #00b7ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* === Headings === */
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+/* === Movie List === */
+.movie-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.movie-option img {
+    width: 50px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+/* === Canvas Styling === */
+canvas {
+    background: #161b22;
+    border: 1px solid #444;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    padding: 20px;
+    color: #f0f0f0;
+}
+
+/* === Search Box Styling === */
+#searchInput {
+    font-size: 1.2rem;
+    padding: 14px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #0d1117;
+    color: #f0f0f0;
+}
+
+#searchInput::placeholder {
+    color: #999;
+}
+
+.list-group-item {
+    background-color: #161b22;
+    color: #f0f0f0;
+    border-color: #333;
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #222 !important;
+}
+
+/* === Autocomplete === */
+.styled-input {
+    width: 80%;
+    max-width: 500px;
+    padding: 12px 16px;
+    font-size: 18px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #0d1117;
+    color: #f0f0f0;
+}
+
+.styled-input:focus {
+    border: 2px solid #fbbc04;
+    background-color: #1f1f1f;
+}
+
+.autocomplete-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+}
+
+.autocomplete-list li {
+    background-color: #161b22;
+    border: 1px solid #333;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+}
+
+.autocomplete-list li a {
+    color: #fbbc04;
+    text-decoration: none;
+    display: block;
+}
+
+.autocomplete-list li a:hover {
+    background-color: #373737;
+}
+
+.autocomplete-list li.no-results {
+    color: white;
+    background-color: #161b22;
+    border: 1px solid #333;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+}
+
+/* === Movie Detail Layout === */
+.movie-detail-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px auto;
+    max-width: 1000px;
+    padding: 20px;
+}
+
+.poster-section {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+}
+
+.movie-poster {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.poster-placeholder {
+    background-color: #333;
+    height: 450px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+    font-size: 18px;
+}
+
+.info-section {
+    flex: 2;
+    min-width: 300px;
+    color: #f0f0f0;
+}
+
+.movie-meta {
+    font-size: 16px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+.review {
+    background-color: #161b22;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* === Rating Styles === */
+.rating-container {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    font-size: 2.5rem;
+    display: inline-flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.rating-container input {
+    display: none;
+}
+
+.rating-container label {
+    color: #444;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.rating-container label::before {
+    content: "★";
+    font-size: 2.5rem;
+    color: #ffd700;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+.rating-container input:checked ~ label::before,
+.rating-container label:hover ~ label::before,
+.rating-container label:hover::before {
+    opacity: 1;
+}
+
+.review-stars {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 1.2rem;
+}
+
+.review-stars span {
+    color: #444;
+}
+
+.review-stars .filled {
+    color: #ffd700;
+}
+
+.star-rating {
+    direction: rtl;
+    font-size: 2rem;
+    display: inline-flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    color: #444;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #fbbc04;
+}
+
+/* === Auth Pages (Login/Register) === */
+.form-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #0d1117;
+    padding: 40px 20px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 0 1rem;
+    background: transparent;
+    box-shadow: none;
+}
+
+legend {
+    text-align: center;
+    font-size: 2rem;
+    color: #fbbc04;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.form-control {
+    background-color: #161b22;
+    border: 1px solid #2c2f36;
+    color: #f0f0f0;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.form-control::placeholder {
+    color: #999;
+}
+
+.btn-warning {
+    background-color: #fbbc04;
+    color: #000;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    width: auto;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-warning:hover {
+    background-color: #ffcc33;
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.auth-footer a {
+    color: #fbbc04;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* === Profile Page Styling === */
+.profile-container {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
+    color: #f0f0f0;
+}
+
+.profile-card {
+    background-color: #161b22;
+    padding: 30px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+.profile-card h4,
+.profile-card p,
+.profile-card strong {
+    color: #fbbc04;
+}
+
+.profile-reviews {
+    background-color: #0d1117;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #f0f0f0;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    #searchInput {
+        font-size: 1rem;
+        padding: 10px;
+    }
+}

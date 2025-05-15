@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Register - CineBuff{% endblock %}
+
+{% block content %}
+<div class="form-screen">
+  <form method="POST" class="form-layout">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend>📝 Register for CineBuff</legend>
+
+      {% for field in [form.username, form.first_name, form.last_name, form.email, form.password, form.confirm_password] %}
+      <div class="form-group">
+        {{ field.label(class="form-control-label") }}
+        {{ field(class="form-control" + (' error-field' if field.errors else '')) }}
+        {% for error in field.errors %}
+        <div class="error-msg">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </fieldset>
+
+    <div class="form-group d-flex justify-content-center">
+      {{ form.submit(class="btn btn-warning") }}
+    </div>
+    <div class="auth-footer">
+      <p>Already have an account? <a href="{{ url_for('users.login') }}">Login here</a></p>
+    </div>
+  </form>
+</div>
+{% endblock %}
