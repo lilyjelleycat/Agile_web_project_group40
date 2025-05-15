@@ -125,5 +125,28 @@ coverage report
 4. Push to the branch
 5. Create a Pull Request
 
-## License
-This project is licensed under the MIT License.
+## References
+
+### Official Documentation
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/)
+- [Flask-Login Documentation](https://flask-login.readthedocs.io/)
+- [Flask-WTF Documentation](https://flask-wtf.readthedocs.io/)
+- [Bootstrap Documentation](https://getbootstrap.com/docs/)
+- [Selenium with Python](https://selenium-python.readthedocs.io/)
+
+### Learning Resources
+- [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world)
+- [Real Python Flask Tutorials](https://realpython.com/tutorials/flask/)
+- [TestDriven.io Flask Testing Guide](https://testdriven.io/blog/flask-pytest-testing/)
+- [Mozilla MDN Web Docs](https://developer.mozilla.org/en-US/)
+
+### Tools and Services
+- [GitHub](https://github.com/)
+- [Python Package Index (PyPI)](https://pypi.org/)
+- [pytest Documentation](https://docs.pytest.org/)
+
+### AI Development Tools
+- [GitHub Copilot](https://github.com/features/copilot) - AI pair programming tool used for code suggestions and completion
+- [ChatGPT](https://chat.openai.com/) - OpenAI's language model used for code review, debugging, and documentation assistance
+
