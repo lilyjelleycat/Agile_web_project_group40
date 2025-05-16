@@ -88,7 +88,7 @@ Agile_web_project_group40/
 
 1. Clone the repository and go into the root path:
 ```bash
-git clone https://github.com/lilyjelleycat/Cinebuff.git
+git clone https://github.com/lilyjelleycat/Agile_web_project_group40.git
 ```
 
 2. Create and activate a virtual environment:
