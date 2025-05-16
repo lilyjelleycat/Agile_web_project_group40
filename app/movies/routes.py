@@ -52,7 +52,10 @@ def movie_detail(tconst):
     movie = Movie.query.filter_by(tconst=tconst).first()
     if not movie:
         return "Movie not found", 404
-
+    
+    if current_user.has_role("admin"):
+        return redirect(url_for("admin.edit_movie", tconst=tconst))
+    
     all_reviews = Review.query.filter_by(movie_id=tconst).all()
     visible_reviews = []
 
