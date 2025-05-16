@@ -6,7 +6,11 @@
 <div class="background-grid"></div>
 
 <div class="text-center mt-5 position-relative" style="z-index: 2;">
-  <h1 class="text-warning mb-4">Search IMDb Top 100 Movies</h1>
+  {% if mode == "admin" %}
+    <h1 class="text-warning mb-4">Edit IMDb Top 100 Movies</h1>
+  {% else %}
+    <h1 class="text-warning mb-4">Search IMDb Top 100 Movies</h1>
+  {% endif %}
   <form method="POST">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">

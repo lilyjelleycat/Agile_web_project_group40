@@ -24,7 +24,7 @@ def search():
         else:
             return render_template("search_results.html", movies=results)
 
-    return render_template("search.html", form=form, posters=poster_urls)
+    return render_template("search.html", form=form, posters=poster_urls, mode="user")
 
 @movies.route("/autocomplete")
 @login_required

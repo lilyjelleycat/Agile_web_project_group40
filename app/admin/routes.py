@@ -1,4 +1,5 @@
 from flask import Blueprint, session, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
 from app.admin.forms import UploadMoviesForm, FindMovieForm, EditMovieForm
 from app.models import Movie
 from app.movies.utils import searchMovies
@@ -11,8 +12,13 @@ admin = Blueprint('admin', __name__)
 
 # Routes
 @admin.route("/upload_movies", methods=["GET", "POST"])
+@login_required
 def upload_movies():
+    if not current_user.is_authenticated or not current_user.has_role('admin'):
+        return redirect(url_for('main.home'))
+
     uploadMoviesForm = UploadMoviesForm()
+    
     if uploadMoviesForm.validate_on_submit():
         file = uploadMoviesForm.file.data
         if file:
@@ -30,10 +36,15 @@ def upload_movies():
     return render_template("upload_movies.html", form=uploadMoviesForm)
 
 @admin.route("/find_movie", methods=["GET", "POST"])
+@login_required
 def find_movie():
-    form = FindMovieForm()
-    if 'username' not in session:
+    if not current_user.is_authenticated or not current_user.has_role('admin'):
         return redirect(url_for('main.home'))
+
+    form = FindMovieForm()
+    posters = db.session.query(Movie.Poster_Link).filter(Movie.Poster_Link != None).limit(50).all()
+    poster_urls = [p[0] for p in posters]
+
     if form.validate_on_submit():
         search_string = form.searchString.data
         results = searchMovies(search_string)
@@ -42,11 +53,16 @@ def find_movie():
             return render_template("search.html", form=form, message="No movies found.")
         else:
             return render_template("search_results.html", movies=results)
-    return render_template("search.html", form=form)
+    print("Form not validated, sending mode as admin")
+    return render_template("search.html", form=form, posters=poster_urls, mode="admin")
 
 @admin.route("/edit_movie/<tconst>", methods=["GET", "POST"])
 def edit_movie(tconst):
+    if not current_user.is_authenticated or not current_user.has_role('admin'):
+        return redirect(url_for('main.home'))
+    
     editMovieForm = EditMovieForm()
+    
     if editMovieForm.validate_on_submit():
         # Fetch the movie using tconst
         movie = Movie.query.filter_by(tconst=tconst).first()

@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
 from app import db
 from app.users.forms import RegistrationForm, LoginForm, ChangePasswordForm, ResetPasswordForm
-from app.movies.forms import SearchForm
 from app.models import Member, UserRole, Review, AnalyticsShare, ReviewShare
 
 # Blueprint for user-related routes
@@ -45,7 +44,11 @@ def login():
             login_user(member, remember=loginForm.remember.data)
             flash(f'Welcome back, {member.username}!', 'info')
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for("movies.search"))
+            
+            if member.has_role('admin'):
+                return redirect(next_page) if next_page else redirect(url_for("admin.find_movie"))
+            else:
+                return redirect(next_page) if next_page else redirect(url_for("movies.search"))
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
 
