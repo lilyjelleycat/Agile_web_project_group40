@@ -36,29 +36,59 @@ Cinebuff is a comprehensive web application that enables users to track, review,
 
 ## Project Structure
 ```
-Cinebuff/
-├── app/                    # Application package
-│   ├── models/            # Database models
-│   ├── routes/            # Route handlers
-│   ├── templates/         # HTML templates
-│   ├── static/            # Static files (CSS, JS, images)
-│   └── __init__.py        # App initialization
-├── tests/                 # Test suite
-│   ├── test_admin.py      # Admin functionality tests
-│   ├── test_routes.py     # Route testing
-│   ├── test_selenium.py   # E2E testing
-│   └── test.py           # Unit tests
-├── instance/              # Instance-specific files
-├── requirements.txt       # Project dependencies
-└── run.py                # Application entry point
+Agile_web_project_group40/
+├── run.py                      # Main application entry point
+├── requirements.txt            # Python dependencies for the project
+├── README.md                   # Project documentation
+├── movies.db                   # SQLite database file (copy of the instance one)
+├── instance/                   # Instance folder
+│   └── movies.db              # Main SQLite database for the application
+├── app/                        # Main application package
+│   ├── __init__.py            # App initialization, DB and login setup
+│   ├── models.py              # Database models (Movie, Member, Review, etc.)
+│   ├── static/                # Static assets
+│   │   └── styles.css         # Application styles
+│   ├── templates/             # HTML templates
+│   │   ├── base.html          # Base template with common layout
+│   │   ├── index.html         # Home page template
+│   │   ├── login.html         # Login page
+│   │   ├── register.html      # Registration page
+│   │   ├── profile.html       # User profile page
+│   │   ├── movie_detail.html  # Movie details page
+│   │   ├── search.html        # Search page
+│   │   └── ... other templates
+│   ├── admin/                 # Admin blueprint package
+│   │   ├── __init__.py
+│   │   ├── forms.py           # Admin-related forms
+│   │   ├── routes.py          # Admin routes for uploading/editing movies
+│   │   └── utils.py           # Admin utility functions
+│   ├── errors/                # Error handling blueprint
+│   │   ├── __init__.py
+│   │   └── handlers.py        # Error handlers (404, 500, etc.)
+│   ├── main/                  # Main blueprint package
+│   │   ├── __init__.py
+│   │   └── routes.py          # Main routes (home page, etc.)
+│   ├── movies/                # Movies blueprint package
+│   │   ├── __init__.py
+│   │   ├── forms.py           # Movie-related forms
+│   │   ├── routes.py          # Movie routes (search, details, reviews)
+│   │   └── utils.py           # Movie utility functions
+│   └── users/                 # Users blueprint package
+│       ├── __init__.py
+│       ├── forms.py           # User-related forms
+│       └── routes.py          # User routes (login, register, profile)
+├── tests/                      # Test directory
+│   ├── __init__.py
+│   ├── seleniumTestRegisterLogin.py  # Selenium tests for registration/login
+│   ├── unitTestRegisterLogin.py      # Unit tests for registration/login
+│   └── testConf.py                   # Test configuration
 ```
 
 ## Installation and Setup
 
-1. Clone the repository:
+1. Clone the repository and go into the root path:
 ```bash
 git clone https://github.com/lilyjelleycat/Cinebuff.git
-cd Cinebuff
 ```
 
 2. Create and activate a virtual environment:
@@ -98,16 +128,10 @@ python -m pytest
 
 2. Run specific test categories:
 ```bash
-python -m pytest test_routes.py    # Route tests
-python -m pytest test_admin.py     # Admin tests
-python -m pytest test_selenium.py  # E2E tests
+python3 -m tests.unitTestRegisterLogin     # unit tests
+python3 -m tests.seleniumTestRegisterLogin  # selenium tests
 ```
 
-3. Generate coverage report:
-```bash
-coverage run -m pytest
-coverage report
-```
 
 ## Group Members
 
