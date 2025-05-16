@@ -1,18 +1,32 @@
-from flask import Blueprint, session, render_template, redirect, url_for, flash
+from flask import Blueprint, session, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.admin.forms import UploadMoviesForm, FindMovieForm, EditMovieForm
-from app.models import Movie
+from werkzeug.security import generate_password_hash
+from functools import wraps
+from app.admin.forms import UploadMoviesForm, FindMovieForm, EditMovieForm, AdminChangeUserPasswordForm
+from app.models import Movie, Member, UserRole
 from app.movies.utils import searchMovies
 from app.admin.utils import process_movies_file
 from app import db
-import pandas as pd
 
 # Blueprint for admin-related routes
 admin = Blueprint('admin', __name__)
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash("Please log in first", "info")
+            return redirect(url_for('users.login', next=request.url))
+        if not current_user.has_role('admin'):
+            flash("You do not have permission to access this page", "danger")
+            return redirect(url_for('main.home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # Routes
 @admin.route("/upload_movies", methods=["GET", "POST"])
 @login_required
+@admin_required
 def upload_movies():
     if not current_user.is_authenticated or not current_user.has_role('admin'):
         return redirect(url_for('main.home'))
@@ -24,19 +38,16 @@ def upload_movies():
         if file:
             # Process the uploaded file
             # Assuming the file is a CSV and you have a function to handle it
-            try:
-                process_movies_file(file)
-                flash('Movies uploaded successfully!', 'success')
-                return redirect(url_for("admin.upload_movies"))
-            except pd.errors.ParserError as e:
-                flash(f'An error occurred while processing the file: {str(e)}', 'danger')
-                return redirect(url_for("admin.upload_movies"))
+            process_movies_file(file)
+            flash('Movies uploaded successfully!', 'success')
+            return redirect(url_for("admin.upload_movies"))
         else:
             flash('No file selected!', 'danger')
-    return render_template("upload_movies.html", form=uploadMoviesForm)
+    return render_template("admin/upload_movies.html", form=uploadMoviesForm)
 
 @admin.route("/find_movie", methods=["GET", "POST"])
 @login_required
+@admin_required
 def find_movie():
     if not current_user.is_authenticated or not current_user.has_role('admin'):
         return redirect(url_for('main.home'))
@@ -57,6 +68,8 @@ def find_movie():
     return render_template("search.html", form=form, posters=poster_urls, mode="admin")
 
 @admin.route("/edit_movie/<tconst>", methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit_movie(tconst):
     if not current_user.is_authenticated or not current_user.has_role('admin'):
         return redirect(url_for('main.home'))
@@ -92,4 +105,58 @@ def edit_movie(tconst):
     # Fetch the movie details using tconst
     movie = Movie.query.filter_by(tconst=tconst).first()
     editMovieForm.setMovieData(movie)
-    return render_template("edit_movie.html", form=editMovieForm)
+    return render_template("admin/edit_movie.html", form=editMovieForm)
+
+
+# --- Administrator Dashboard Route ---
+@admin.route("/dashboard")
+@login_required
+@admin_required
+def dashboard():
+    users = Member.query.all()
+    return render_template("admin/admin_dashboard.html", users=users, title="Administrator Dashboard")
+
+# --- Administrator Change User Password Route ---
+@admin.route("/change_user_password/<string:username>", methods=["GET", "POST"])
+@login_required
+@admin_required
+def change_user_password(username):
+    user_to_edit = Member.query.filter_by(username=username).first_or_404()
+    form = AdminChangeUserPasswordForm() # Assuming AdminChangeUserPasswordForm is defined elsewhere
+
+    if form.validate_on_submit():
+        user_to_edit.hashPwd = generate_password_hash(form.new_password.data) # Assuming hashPwd is the attribute name
+        db.session.commit()
+        flash(f"User {user_to_edit.username}'s password has been updated.", "success")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template(
+        "admin/admin_change_password.html",
+        form=form,
+        user_to_edit=user_to_edit,
+        title=f"Change Password for {user_to_edit.username}"
+    )
+
+# --- Delete User Route ---
+@admin.route("/delete_user/<string:username>", methods=["POST"]) # Must be a POST request
+@login_required
+@admin_required
+def delete_user(username):
+    user_to_delete = Member.query.filter_by(username=username).first_or_404()
+
+    if user_to_delete.username == current_user.username:
+        flash("You cannot delete your own account.", "danger")
+        return redirect(url_for("admin.dashboard"))
+
+    try:
+        # Assuming UserRole is a model related to the user
+        UserRole.query.filter_by(username=user_to_delete.username).delete()
+
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash(f"User {user_to_delete.username} has been deleted.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting user {user_to_delete.username}: {str(e)}", "danger")
+
+    return redirect(url_for("admin.dashboard"))

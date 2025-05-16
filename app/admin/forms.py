@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, IntegerField, TextAreaField
-from wtforms.validators import DataRequired, Length
+from wtforms import SubmitField, StringField, IntegerField, TextAreaField, PasswordField
+from wtforms.validators import DataRequired, Length, EqualTo
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from app.models import Movie
 
@@ -50,3 +50,16 @@ class EditMovieForm(FlaskForm):
         self.Star3.data = movie.Star3
         self.Star4.data = movie.Star4
         self.Overview.data = movie.Overview
+
+class AdminChangeUserPasswordForm(FlaskForm):
+    new_password = PasswordField(
+        "New password", validators=[DataRequired(), Length(min=6, message="The password length should be at least 6 characters")]
+    )
+    confirm_new_password = PasswordField(
+        "Confirm the new password",
+        validators=[
+            DataRequired(),
+            EqualTo("new_password", message="The passwords entered twice are inconsistent"),
+        ],
+    )
+    submit = SubmitField("Submit")
