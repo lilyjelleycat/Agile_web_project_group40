@@ -64,7 +64,10 @@
       <div class="mb-3">
         <textarea name="content" class="form-control" rows="4" placeholder="Write your review..." required></textarea>
       </div>
-      <button type="submit" class="btn btn-warning">Submit Review</button>
+      <div>
+        <button type="button" class="btn btn-warning" onclick="window.history.back();">Cancel</button>
+        <button type="submit" class="btn btn-warning">Submit Review</button>
+      </div>
     </form>
   </div>
   {% endif %}

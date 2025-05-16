@@ -31,11 +31,11 @@ def search():
 def autocomplete():
     q = request.args.get("q", "")
     reviewed_only = request.args.get("reviewed_only") == "1"
-    username = session.get("username")
+    username = current_user.username
 
     if q:
         query = Movie.query
-
+        
         if reviewed_only and username:
             query = query.join(Review).filter(Review.username == username)
 
