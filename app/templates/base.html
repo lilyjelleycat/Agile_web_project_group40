@@ -12,7 +12,15 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% if 'username' in session %}{{ url_for('movies.search') }}{% else %}{{ url_for('main.home') }}{% endif %}">CineBuff</a>
+      {% if current_user.is_authenticated %}
+        {% if current_user.has_role('admin') %}
+          <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">CineBuff</a>
+        {% elif current_user.has_role('user') %}
+          <a class="navbar-brand" href="{{ url_for('movies.search') }}">CineBuff</a>
+        {% else %}
+          <a class="navbar-brand" href="{{ url_for('home') }}">CineBuff</a>
+        {% endif %}
+      {% endif %}
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -21,6 +29,7 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           {% if current_user.is_authenticated %}
             {% if current_user.has_role('admin') %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">User Management</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.upload_movies') }}">Upload Movies</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.find_movie') }}">Edit Movie</a></li>
               <li class="nav-item"><a class="nav-link" href="{{ url_for('users.change_password') }}">Change Password</a></li>
