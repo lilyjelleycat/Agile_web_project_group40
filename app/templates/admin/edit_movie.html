@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Edit Movie - CineBuff{% endblock %}
+
+{% block content %}
+<!-- Display the image if Poster_Link has a value -->
+<div class="form-screen">  
+  <form method="POST" class="form-layout">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend>📜 Edit Movie for CineBuff</legend>
+      {% if form.Poster_Link.data %}
+      <!-- Display the image if Poster_Link has a value -->
+      <div class="mx-auto" style="text-align: center;">
+        <img src="{{ form.Poster_Link.data }}" alt="Movie Poster" style="max-width: 200px;">
+      </div>
+      {% endif %}
+      {% for field in [form.tconst, form.primaryTitle, form.originalTitle, form.Poster_Link, form.startYear, form.genres,
+                       form.Certificate, form.runtimeMinutes, form.Director, form.Star1, form.Star2, form.Star3, form.Star4, form.Overview] %}
+      <div class="form-group">
+        {{ field.label(class="form-control-label") }}
+        {{ field(class="form-control" + (' error-field' if field.errors else '')) }}
+        {% for error in field.errors %}
+        <div class="error-msg">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </fieldset>
+
+    <div class="form-group d-flex justify-content-center">
+      <button type="button" class="btn btn-warning" onclick="window.history.back();">Cancel</button>
+      &nbsp;&nbsp;
+      {{ form.submit(class="btn btn-warning") }}
+    </div>
+  </form>
+</div>
+{% endblock %}
