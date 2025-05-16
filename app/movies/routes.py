@@ -26,6 +26,7 @@ def search():
 
     return render_template("search.html", form=form, posters=poster_urls, mode="user")
 
+
 @movies.route("/autocomplete")
 @login_required
 def autocomplete():
@@ -33,17 +34,18 @@ def autocomplete():
     reviewed_only = request.args.get("reviewed_only") == "1"
     username = current_user.username
 
-    if q:
-        query = Movie.query
-        
-        if reviewed_only and username:
-            query = query.join(Review).filter(Review.username == username)
+    if not q:
+        return jsonify([])   
+    base_results = searchMovies(q)
 
-        query = query.filter(Movie.primaryTitle.ilike(f"%{q}%"))
-        results = query.limit(10).all()
-        return jsonify([[m.primaryTitle, m.tconst] for m in results])
+    if reviewed_only:
+        reviewed_ids = {
+            r.movie_id for r in Review.query.filter_by(username=username).all()
+        }
+        base_results = [m for m in base_results if m.tconst in reviewed_ids]
+    trimmed = base_results[:10]
+    return jsonify([[m.primaryTitle, m.tconst] for m in trimmed])
 
-    return jsonify([])
 
 
 @movies.route("/movie/<tconst>", methods=["GET", "POST"])
